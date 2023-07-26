@@ -5,6 +5,11 @@ const getAll = async () => {
     return resp.data
 }
 
+const getAllAvailable = async () => {
+    const resp = await http.get("/discounts/all/available")
+    return resp.data
+}
+
 const getPageOfDiscounts = async (page, limit) => {
     const resp = await http.get("/discounts/paging", {
         params: {
@@ -41,4 +46,7 @@ const checkDuplicateDiscountInfo = async (mode, discountId, field, value) => {
     return resp.data // true: value of this field can be used, false: info is used by the other
 }
 
-export { checkDuplicateDiscountInfo, createNewDiscount, deleteDiscount, getAll, getDiscount, getPageOfDiscounts, updateDiscount };
+export {
+    checkDuplicateDiscountInfo, createNewDiscount, deleteDiscount,
+    getAll, getAllAvailable, getDiscount, getPageOfDiscounts, updateDiscount
+};

@@ -181,11 +181,12 @@ const Trip = () => {
   });
 
   // Handle delete Coach
-  const handleDeleteDiscount = (tripId) => {
+  const handleDeleteTrip = (tripId) => {
     deleteMutation.mutate(tripId, {
       onSuccess: (data) => {
         setOpenModal(!openModal);
         queryClient.invalidateQueries({ queryKey: ["trips", pagination] });
+        queryClient.removeQueries({ queryKey: ["trips"], type: "inactive" });
         handleToast("success", data);
       },
       onError: (error) => {
@@ -310,7 +311,7 @@ const Trip = () => {
               variant="contained"
               color="error"
               startIcon={<CheckIcon />}
-              onClick={() => handleDeleteDiscount(selectedRow)}
+              onClick={() => handleDeleteTrip(selectedRow)}
             >
               Confirm
             </Button>

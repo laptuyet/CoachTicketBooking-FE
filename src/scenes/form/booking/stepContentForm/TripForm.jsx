@@ -11,15 +11,12 @@ import {
   Checkbox,
   CircularProgress,
   FormControl,
-  FormControlLabel,
   IconButton,
   InputAdornment,
   List,
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Radio,
-  RadioGroup,
   TextField,
   Typography,
   useTheme,
@@ -30,10 +27,23 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { format, parse } from "date-fns";
 import { useFormikContext } from "formik";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { tokens } from "../../../../theme";
 import * as provinceApi from "../../../global/provinceQueries";
+import * as bookingApi from "../../../ticket/ticketQueries";
 import * as tripApi from "../../../trip/tripQueries";
+
+const getBookingPriceString = (trip) => {
+  let finalPrice = trip.price;
+  if (!isNaN(trip?.discount?.amount)) {
+    finalPrice -= trip.discount.amount;
+  }
+  // nhớ format cho đẹp
+  return new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  }).format(finalPrice);
+};
 
 const TripForm = ({ field, setActiveStep, bookingData, setBookingData }) => {
   const theme = useTheme();
@@ -47,6 +57,8 @@ const TripForm = ({ field, setActiveStep, bookingData, setBookingData }) => {
   const [selectedDestination, setSelectedDestination] = useState(
     bookingData.trip?.destination ?? null
   );
+  const [numberOrderedSeats, setNumberOrderedSeats] = useState([]);
+
   const formik = useFormikContext();
   const queryClient = useQueryClient();
   const { values, errors, touched, setFieldValue, handleChange, handleBlur } =
@@ -84,11 +96,17 @@ const TripForm = ({ field, setActiveStep, bookingData, setBookingData }) => {
 
   // prepare find trip query
   const findTripQuery = useQuery({
-    queryKey: ["trips", selectedSource?.id, selectedDestination?.id],
+    queryKey: [
+      "trips",
+      selectedSource?.id,
+      selectedDestination?.id,
+      values.bookingDateTime.split(" ")[0],
+    ],
     queryFn: () =>
       tripApi.findAllTripBySourceAndDest(
         selectedSource?.id,
-        selectedDestination?.id
+        selectedDestination?.id,
+        values.bookingDateTime.split(" ")[0]
       ),
     keepPreviousData: true,
     enabled: !!selectedSource && !!selectedDestination && findClicked,
@@ -101,10 +119,25 @@ const TripForm = ({ field, setActiveStep, bookingData, setBookingData }) => {
     setSelectedDestination(selectedSource);
   };
 
-  const formatTripInfo = (trip) => {
-    let infoText = `${trip.source.name} \u21D2 ${trip.destination.name}\t[${trip.departureTime}]`;
-    return infoText;
+  const getNumberOfOrderedSeats = async (tripId, bookingDateTime) => {
+    const resp = await bookingApi.getSeatBooking(tripId, bookingDateTime);
+    return resp;
   };
+
+  useEffect(() => {
+    const fetchOrderedSeats = async () => {
+      if (findTripQuery.data && values.bookingDateTime) {
+        const promises = findTripQuery.data.map((trip) =>
+          getNumberOfOrderedSeats(trip.id, values.bookingDateTime)
+        );
+
+        const orderedSeatsList = await Promise.all(promises);
+        setNumberOrderedSeats(orderedSeatsList);
+      }
+    };
+
+    fetchOrderedSeats(); // Gọi hàm fetchOrderedSeats khi component được render
+  }, [findTripQuery.data, values.bookingDateTime]);
 
   return (
     <>
@@ -128,7 +161,7 @@ const TripForm = ({ field, setActiveStep, bookingData, setBookingData }) => {
         </LoadingButton>
       </Box>
       {/* BOOKING TYPE */}
-      <Box display="flex">
+      {/* <Box display="flex">
         <FormControl
           sx={{
             marginLeft: "auto",
@@ -175,8 +208,9 @@ const TripForm = ({ field, setActiveStep, bookingData, setBookingData }) => {
             />
           </RadioGroup>
         </FormControl>
-      </Box>
+      </Box> */}
       <Box
+        mt="20px"
         display="grid"
         gap="30px"
         gridTemplateColumns="repeat(4, minmax(0, 1fr))"
@@ -289,7 +323,6 @@ const TripForm = ({ field, setActiveStep, bookingData, setBookingData }) => {
         >
           {/* departure time */}
           <FormControl
-            fullWidth
             sx={{
               gridColumn: "span 2",
             }}
@@ -335,7 +368,7 @@ const TripForm = ({ field, setActiveStep, bookingData, setBookingData }) => {
             </LocalizationProvider>
           </FormControl>
           {/* return time */}
-          <FormControl
+          {/* <FormControl
             fullWidth
             sx={{
               gridColumn: "span 2",
@@ -385,7 +418,7 @@ const TripForm = ({ field, setActiveStep, bookingData, setBookingData }) => {
                 }}
               />
             </LocalizationProvider>
-          </FormControl>
+          </FormControl> */}
         </Box>
       </Box>
 
@@ -404,41 +437,74 @@ const TripForm = ({ field, setActiveStep, bookingData, setBookingData }) => {
               width: "100%",
               position: "relative",
               overflow: "auto",
-              maxHeight: 200,
+              maxHeight: 300,
             }}
           >
-            {(findTripQuery.data ?? []).map((trip, index) => (
-              <ListItemButton
-                disableRipple
-                key={trip.id}
-                sx={{ textAlign: "center" }}
-              >
-                <ListItemText
-                  onClick={() => {
-                    setFieldValue("trip", trip);
-                    setFieldValue("seatNumber", []); // avoid old chosen seats when choose new Trip
-                    setSelectedItemIndex(index);
-                  }}
-                  primary={`[${trip.departureTime}] ${trip.source.name} \u21D2 ${trip.destination.name}`}
-                  secondary={`Type: ${trip.coach.coachType}, Price: ${
-                    trip.price ? trip.price : "none"
-                  }`}
-                />
-                <ListItemIcon>
-                  <Checkbox
-                    checked={
-                      index === selectedItemIndex || values.trip === trip
+            {(findTripQuery.data ?? []).map((trip, index) => {
+              return (
+                <ListItemButton
+                  disableRipple
+                  key={trip.id}
+                  sx={{ textAlign: "center" }}
+                >
+                  <ListItemText
+                    sx={{ m: "10px 0" }}
+                    onClick={() => {
+                      setFieldValue("trip", trip);
+                      setFieldValue("seatNumber", []); // avoid keeping old chosen seats when choose new Trip
+                      setSelectedItemIndex(index);
+                    }}
+                    primary={
+                      <Typography variant="h5">
+                        <span style={{ fontWeight: "bold" }}>
+                          [{trip.departureTime}]
+                        </span>{" "}
+                        {trip.source.name} {`\u21D2`}
+                        {trip.destination.name}
+                      </Typography>
                     }
-                    tabIndex={-1}
-                    disableRipple={true}
-                    icon={<CircleOutlinedIcon />}
-                    checkedIcon={<CheckCircleOutlineOutlinedIcon />}
+                    secondary={
+                      <Typography variant="h5" mt="5px">
+                        Type:{" "}
+                        <span style={{ fontWeight: "bold" }}>
+                          {trip.coach.coachType}
+                        </span>
+                        , Price:{" "}
+                        <span
+                          style={{ fontWeight: "bold", fontStyle: "italic" }}
+                        >
+                          {trip.price ? getBookingPriceString(trip) : "none"}
+                        </span>{" "}
+                        {"(included discount)"},{" "}
+                        <span
+                          style={{ fontWeight: "bold", fontStyle: "italic" }}
+                        >
+                          {trip.coach.capacity} seats{" "}
+                          {`(${
+                            trip.coach.capacity -
+                            numberOrderedSeats[index]?.length
+                          } left)`}
+                        </span>
+                      </Typography>
+                    }
                   />
-                </ListItemIcon>
-              </ListItemButton>
-            ))}
+                  <ListItemIcon>
+                    <Checkbox
+                      checked={
+                        index === selectedItemIndex || values.trip === trip
+                      }
+                      tabIndex={-1}
+                      disableRipple={true}
+                      icon={<CircleOutlinedIcon />}
+                      checkedIcon={<CheckCircleOutlineOutlinedIcon />}
+                    />
+                  </ListItemIcon>
+                </ListItemButton>
+              );
+            })}
           </List>
         ) : (
+          // empty list icon
           <Box
             width="100%"
             textAlign="center"

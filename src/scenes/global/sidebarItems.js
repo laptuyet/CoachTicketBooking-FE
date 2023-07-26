@@ -15,9 +15,9 @@ export const sidebarItems = [
         icon: HomeOutlinedIcon
     },
     {
-        title: 'Driver',
-        to: '/drivers',
-        icon: RouteOutlinedIcon
+        title: 'Ticket',
+        to: '/tickets',
+        icon: TicketOutlinedIcon
     },
     {
         title: 'Trip',
@@ -25,33 +25,33 @@ export const sidebarItems = [
         icon: TripOutlinedIcon
     },
     {
-        title: 'Ticket',
-        to: '/tickets',
-        icon: TicketOutlinedIcon
+        title: 'Driver',
+        to: '/drivers',
+        icon: RouteOutlinedIcon
     },
     {
         title: 'Coach',
         to: '/coaches',
         icon: BusOutlinedIcon
     },
-    {
-        title: 'Payment',
-        to: '/payments',
-        icon: PaymentOutlinedIcon
-    },
+    // {
+    //     title: 'Payment',
+    //     to: '/payments',
+    //     icon: PaymentOutlinedIcon
+    // },
     {
         title: 'Discount',
         to: '/discounts',
         icon: DiscountOutlinedIcon
     },
     {
+        title: 'Users',
+        to: '/users',
+        icon: PeopleAltOutlinedIcon
+    },
+    {
         title: 'Report',
         to: '/reports',
         icon: ReportOutlinedIcon
     },
-    {
-        title: 'Users',
-        to: '/users',
-        icon: PeopleAltOutlinedIcon
-    }
 ]

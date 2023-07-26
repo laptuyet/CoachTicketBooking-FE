@@ -67,7 +67,7 @@ const App = () => {
                     <Route path=":coachId" element={<CoachForm />} />
                     <Route path="new" element={<CoachForm />} />
                   </Route>
-                  <Route path="payments" element={<Payment />} />
+                  {/* <Route path="payments" element={<Payment />} /> */}
                   <Route path="discounts">
                     <Route index element={<Discount />} />
                     <Route path=":discountId" element={<DiscountForm />} />

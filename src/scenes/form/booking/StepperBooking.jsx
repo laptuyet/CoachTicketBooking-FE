@@ -120,7 +120,6 @@ const StepperBooking = () => {
     } = values;
 
     actions.setSubmitting(false);
-    console.log("booking request", newValues);
 
     if (isAddMode) {
       createMutation.mutate(newValues, {
@@ -135,7 +134,7 @@ const StepperBooking = () => {
       });
     } else {
     }
-
+    setActiveStep(0);
     // handleNext();  // khi nao thanh cong thi chuyen trang success
   };
 

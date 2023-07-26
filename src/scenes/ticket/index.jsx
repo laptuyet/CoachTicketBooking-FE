@@ -37,6 +37,7 @@ import { useQueryString } from "../../utils/useQueryString";
 import * as tripApi from "../trip/tripQueries";
 import * as userApi from "../user/userQueries";
 import * as ticketApi from "./ticketQueries";
+import { parse, format } from "date-fns";
 
 const Ticket = () => {
   const theme = useTheme();
@@ -47,7 +48,7 @@ const Ticket = () => {
   const [openTripModal, setOpenTripModal] = useState(false);
   const [openBookingModal, setOpenBookingModal] = useState(false);
   const [selectedRow, setSelectedRow] = useState("");
-  const [selectedUser, setSelectedUser] = useState("");
+  // const [selectedUser, setSelectedUser] = useState("");
   const [selectedTrip, setSelectedTrip] = useState("");
   const [filtering, setFiltering] = useState("");
 
@@ -59,11 +60,11 @@ const Ticket = () => {
     enabled: selectedRow !== "",
   });
 
-  const userQuery = useQuery({
-    queryKey: ["users", selectedUser],
-    queryFn: () => userApi.getUser(selectedUser),
-    enabled: selectedUser !== "",
-  });
+  // const userQuery = useQuery({
+  //   queryKey: ["users", selectedUser],
+  //   queryFn: () => userApi.getUser(selectedUser),
+  //   enabled: selectedUser !== "",
+  // });
 
   const tripQuery = useQuery({
     queryKey: ["trips", selectedTrip],
@@ -78,22 +79,23 @@ const Ticket = () => {
         header: "Customer",
         accessorKey: "user",
         footer: "Customer",
-        width: 120,
+        width: 150,
         maxWidth: 250,
         isEllipsis: true,
         cell: (info) => {
-          const { username, firstName, lastName } = info.getValue();
+          const { custFirstName, custLastName } = info.row.original;
           return (
             <Box
               display="flex"
               alignItems="center"
               justifyContent="space-around"
             >
-              {firstName} {lastName}
+              {custLastName}
               <CustomToolTip title="Detail" placement="top">
                 <IconButton
                   onClick={() => {
-                    setSelectedUser(username);
+                    // setSelectedUser(username);
+                    setSelectedRow(info.row.original.id); // get customer's info not logged in user's info
                     setOpenUserModal(!openUserModal);
                   }}
                 >
@@ -105,21 +107,18 @@ const Ticket = () => {
         },
       },
       {
-        header: "Route",
+        header: "Trip",
         accessorKey: "trip",
-        footer: "Route",
+        footer: "Trip",
         width: 350,
-        maxWidth: 300,
+        maxWidth: 400,
         isEllipsis: true,
         align: "center",
         cell: (info) => {
-          const { id, source, destination } = info.getValue();
+          const { id, source, destination, departureTime } = info.getValue();
           return (
-            <Box
-              display="flex"
-              alignItems="center"
-              justifyContent="space-around"
-            >
+            <Box display="flex" alignItems="center" justifyContent="center">
+              <Typography fontWeight="bold">[{departureTime}]</Typography>
               {source.name}
               {info.row.original.bookingType === "ONEWAY" ? (
                 <span style={{ margin: "0 6px" }}>&rArr;</span>
@@ -140,14 +139,6 @@ const Ticket = () => {
             </Box>
           );
         },
-      },
-      {
-        header: "Departure Time",
-        accessorKey: "trip.departureTime",
-        footer: "Departure Time",
-        width: 100,
-        maxWidth: 200,
-        align: "center",
       },
       {
         header: "Seat Number",
@@ -362,9 +353,14 @@ const Ticket = () => {
           }}
         >
           <Box textAlign="center" marginBottom="30px">
-            <Typography variant="h4">USER DETAIL</Typography>
+            <Typography variant="h4">CUSTOMER DETAIL</Typography>
+            <Typography mt="5px" variant="h5" fontStyle="italic">
+              {bookingQuery.data?.user !== null
+                ? `Buy with Account (${bookingQuery.data?.user?.username})`
+                : "Buy without Account"}
+            </Typography>
           </Box>
-          {userQuery.isLoading ? (
+          {bookingQuery.isLoading ? (
             <Stack spacing={1}>
               {/* For variant="text", adjust the height via font-size */}
               <Skeleton variant="text" sx={{ fontSize: "1rem" }} />
@@ -387,7 +383,7 @@ const Ticket = () => {
                 type="text"
                 label="Full Name"
                 name="fullName"
-                value={`${userQuery?.data?.firstName} ${userQuery?.data?.lastName}`}
+                value={`${bookingQuery?.data?.custFirstName} ${bookingQuery?.data?.custLastName}`}
                 sx={{
                   gridColumn: "span 4",
                 }}
@@ -398,14 +394,14 @@ const Ticket = () => {
                 fullWidth
                 variant="outlined"
                 type="text"
-                label="Phone"
+                label="Contact Phone"
                 name="phone"
-                value={userQuery?.data?.phone}
+                value={bookingQuery?.data?.phone}
                 sx={{
                   gridColumn: "span 4",
                 }}
               />
-              <TextField
+              {/* <TextField
                 color="warning"
                 size="small"
                 fullWidth
@@ -413,33 +409,20 @@ const Ticket = () => {
                 type="text"
                 label="Email"
                 name="email"
-                value={userQuery?.data?.email}
+                value={bookingQuery?.data?.email}
                 sx={{
                   gridColumn: "span 4",
                 }}
-              />
+              /> */}
               <TextField
                 color="warning"
                 size="small"
                 fullWidth
                 variant="outlined"
                 type="text"
-                label="Address"
+                label="Pickup Address"
                 name="address"
-                value={userQuery?.data?.address}
-                sx={{
-                  gridColumn: "span 4",
-                }}
-              />
-              <TextField
-                color="warning"
-                size="small"
-                fullWidth
-                variant="outlined"
-                type="text"
-                label="Date of Birth"
-                name="dob"
-                value={userQuery.data.dob}
+                value={bookingQuery?.data?.pickUpAddress}
                 sx={{
                   gridColumn: "span 4",
                 }}
@@ -606,7 +589,9 @@ const Ticket = () => {
           }}
         >
           <Box textAlign="center" marginBottom="30px">
-            <Typography variant="h4">PAYMENT DETAIL</Typography>
+            <Typography variant="h4" fontWeight="bold">
+              PAYMENT DETAIL
+            </Typography>
           </Box>
           {bookingQuery.isLoading ? (
             <Stack spacing={1}>
@@ -618,64 +603,100 @@ const Ticket = () => {
               <Skeleton variant="rounded" width={210} height={60} />
             </Stack>
           ) : (
-            <Box
-              display="grid"
-              gap="30px"
-              gridTemplateColumns="repeat(4, minmax(0, 1fr))"
-            >
-              <TextField
-                color="warning"
-                size="small"
-                fullWidth
-                variant="outlined"
-                type="text"
-                label="Total"
-                name="totalPayment"
-                value={bookingQuery?.data?.totalPayment}
-                sx={{
-                  gridColumn: "span 2",
-                }}
-              />
-              <TextField
-                color="warning"
-                size="small"
-                fullWidth
-                variant="outlined"
-                type="text"
-                label="Date time"
-                name="paymentDateTime"
-                value={bookingQuery?.data?.paymentDateTime}
-                sx={{
-                  gridColumn: "span 2",
-                }}
-              />
-              <TextField
-                color="warning"
-                size="small"
-                fullWidth
-                variant="outlined"
-                type="text"
-                label="Method"
-                name="paymentMethod"
-                value={bookingQuery?.data?.paymentMethod}
-                sx={{
-                  gridColumn: "span 2",
-                }}
-              />
-              <TextField
-                color="warning"
-                size="small"
-                fullWidth
-                variant="outlined"
-                type="text"
-                label="Status"
-                name="paymentStatus"
-                value={bookingQuery?.data?.paymentStatus}
-                sx={{
-                  gridColumn: "span 2",
-                }}
-              />
-            </Box>
+            <>
+              <Box
+                display="grid"
+                gap="30px"
+                gridTemplateColumns="repeat(4, minmax(0, 1fr))"
+              >
+                <TextField
+                  color="warning"
+                  size="small"
+                  fullWidth
+                  variant="outlined"
+                  type="text"
+                  label="Total"
+                  name="totalPayment"
+                  value={bookingQuery?.data?.totalPayment}
+                  sx={{
+                    gridColumn: "span 2",
+                  }}
+                />
+                <TextField
+                  color="warning"
+                  size="small"
+                  fullWidth
+                  variant="outlined"
+                  type="text"
+                  label="Date time"
+                  name="paymentDateTime"
+                  value={bookingQuery?.data?.paymentDateTime}
+                  sx={{
+                    gridColumn: "span 2",
+                  }}
+                />
+                <TextField
+                  color="warning"
+                  size="small"
+                  fullWidth
+                  variant="outlined"
+                  type="text"
+                  label="Method"
+                  name="paymentMethod"
+                  value={bookingQuery?.data?.paymentMethod}
+                  sx={{
+                    gridColumn: "span 2",
+                  }}
+                />
+                <TextField
+                  color="warning"
+                  size="small"
+                  fullWidth
+                  variant="outlined"
+                  type="text"
+                  label="Status"
+                  name="paymentStatus"
+                  value={bookingQuery?.data?.paymentStatus}
+                  sx={{
+                    gridColumn: "span 2",
+                  }}
+                />
+              </Box>
+              <Typography
+                m="20px 0"
+                variant="h4"
+                fontWeight="bold"
+                textAlign="center"
+              >
+                PAYMENT HISTORIES
+              </Typography>
+              {bookingQuery.data.paymentHistories.length === 0 ? undefined : (
+                <Box mt="20px" maxHeight="200px" overflow="auto">
+                  {bookingQuery.data.paymentHistories
+                    .toReversed()
+                    .map((history, index) => {
+                      const { oldStatus, newStatus, statusChangeDateTime } =
+                        history;
+                      return (
+                        <Box p="5px" textAlign="center" key={index}>
+                          <Typography>{`${format(
+                            parse(
+                              statusChangeDateTime,
+                              "yyyy-MM-dd HH:mm:ss",
+                              new Date()
+                            ),
+                            "HH:mm:ss dd/MM/yyyy"
+                          )}`}</Typography>
+                          <Typography mt="4px" fontWeight="bold" variant="h5">
+                            {oldStatus ? oldStatus : "CREATE"} &rArr;{" "}
+                            {newStatus}
+                          </Typography>
+                        </Box>
+                      );
+                    })}
+                </Box>
+              )}
+            </>
           )}
         </Box>
       </Modal>

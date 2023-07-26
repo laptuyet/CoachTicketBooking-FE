@@ -31,6 +31,13 @@ import * as driverApi from "../../driver/driverQueries";
 import * as provinceApi from "../../global/provinceQueries";
 import * as tripApi from "../../trip/tripQueries";
 
+const formatCurrency = (amount) => {
+  return new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  }).format(amount);
+};
+
 const initialValues = {
   id: -1,
   driver: null,
@@ -97,8 +104,8 @@ const TripForm = () => {
     enabled: provinceClicked,
   });
   const disCountQuery = useQuery({
-    queryKey: ["discounts", "all"],
-    queryFn: () => discountApi.getAll(),
+    queryKey: ["discounts", "all", "available"],
+    queryFn: () => discountApi.getAllAvailable(),
     enabled: discountClicked,
   });
 
@@ -408,7 +415,7 @@ const TripForm = () => {
                 onOpen={handleDiscountOpen}
                 onChange={(e, newValue) => setFieldValue("discount", newValue)}
                 getOptionLabel={(option) =>
-                  `${option.code}, Amount: ${option.amount}`
+                  `${option.code}, Amount: ${formatCurrency(option.amount)}`
                 }
                 options={disCountQuery.data ?? []}
                 loading={discountClicked && disCountQuery.isLoading}
@@ -419,7 +426,7 @@ const TripForm = () => {
                   <TextField
                     {...params}
                     name="discount"
-                    label="Discount"
+                    label="Available Discount"
                     color="warning"
                     size="small"
                     fullWidth

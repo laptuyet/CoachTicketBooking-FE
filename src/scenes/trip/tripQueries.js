@@ -5,8 +5,8 @@ const getAll = async () => {
     return resp.data
 }
 
-const findAllTripBySourceAndDest = async (sourceId, destId) => {
-    const resp = await http.get(`/trips/${sourceId}/${destId}`)
+const findAllTripBySourceAndDest = async (sourceId, destId, chosenDate) => {
+    const resp = await http.get(`/trips/${sourceId}/${destId}/${chosenDate}`)
     return resp.data
 }
 
