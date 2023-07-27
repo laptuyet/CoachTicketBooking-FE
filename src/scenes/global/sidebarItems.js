@@ -7,6 +7,7 @@ import PaymentOutlinedIcon from "@mui/icons-material/PaidOutlined";
 import DiscountOutlinedIcon from "@mui/icons-material/DiscountOutlined";
 import ReportOutlinedIcon from "@mui/icons-material/TimelineOutlined";
 import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
+import AccessibleIcon from '@mui/icons-material/Accessible';
 
 export const sidebarItems = [
     {
@@ -27,7 +28,7 @@ export const sidebarItems = [
     {
         title: 'Driver',
         to: '/drivers',
-        icon: RouteOutlinedIcon
+        icon: AccessibleIcon
     },
     {
         title: 'Coach',

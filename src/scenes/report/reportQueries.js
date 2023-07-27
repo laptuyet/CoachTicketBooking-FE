@@ -1,13 +1,23 @@
 import { http } from "../../utils/http";
 
 const getTotalRevenue = async (startDate, endDate, timeOption) => {
-    const resp = await http.get(`/reports/${startDate}/${endDate}/${timeOption}`)
+    const resp = await http.get(`/reports/revenues/${startDate}/${endDate}/${timeOption}`)
     return resp.data
 }
 
 const getTotalWeekRevenue = async (date) => {
-    const resp = await http.get(`/reports/${date}`)
+    const resp = await http.get(`/reports/revenues/${date}`)
     return resp.data
 }
 
-export { getTotalRevenue, getTotalWeekRevenue }
+const getCoachUsage = async (startDate, endDate, timeOption) => {
+    const resp = await http.get(`/reports/usages/${startDate}/${endDate}/${timeOption}`)
+    return resp.data
+}
+
+const getTopRoute = async (startDate, endDate, timeOption) => {
+    const resp = await http.get(`/reports/toproute/${startDate}/${endDate}/${timeOption}`)
+    return resp.data
+}
+
+export { getTotalRevenue, getTotalWeekRevenue, getCoachUsage, getTopRoute }
