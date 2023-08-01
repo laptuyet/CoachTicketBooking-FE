@@ -1,11 +1,23 @@
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
-import { Box, Divider, IconButton, Typography, useTheme } from "@mui/material";
+import {
+  Box,
+  Divider,
+  IconButton,
+  Tooltip,
+  Typography,
+  useTheme,
+} from "@mui/material";
 import React, { useState } from "react";
 import { Menu, MenuItem, ProSidebar } from "react-pro-sidebar";
 import "react-pro-sidebar/dist/css/styles.css";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { tokens } from "../../theme";
 import { sidebarItems } from "./sidebarItems";
+import useLogin from "../../utils/useLogin";
+import ExitToAppOutlinedIcon from "@mui/icons-material/ExitToAppOutlined";
+import SettingsIcon from "@mui/icons-material/Settings";
+import * as authApi from "./authQueries";
+import { useNavigate } from "react-router-dom";
 
 const Item = (props) => {
   const { title, to, icon, selected, setSelected } = props;
@@ -31,6 +43,21 @@ const Sidebar = () => {
   const colors = tokens(theme.palette.mode);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [selected, setSelected] = useState("Dashboard");
+  const navigate = useNavigate();
+
+  const isLoggedIn = useLogin();
+  const loginUser = localStorage.getItem("loginUser");
+
+  const handleLogout = () => {
+    if (!isLoggedIn) navigate("/login");
+    else {
+      authApi.logout();
+      localStorage.removeItem("acToken");
+      localStorage.removeItem("loginUser");
+      localStorage.removeItem("permissions");
+      navigate("/login");
+    }
+  };
 
   return (
     <Box
@@ -81,7 +108,7 @@ const Sidebar = () => {
           </MenuItem>
           {!isCollapsed && (
             <Box mb="25px">
-              <Box display="flex" justifyContent="center" alignContent="center">
+              {/* <Box display="flex" justifyContent="center" alignContent="center">
                 <img
                   src="../../src/assets/narutooo.jpg"
                   alt="avatar"
@@ -89,21 +116,22 @@ const Sidebar = () => {
                   height="100px"
                   style={{ borderRadius: "50%", cursor: "pointer" }}
                 />
-              </Box>
-              <Box textAlign="center">
-                <Typography
-                  variant="h3"
-                  fontWeight="bold"
-                  color={colors.grey[100]}
-                  margin="10px 0 0 0"
-                >
-                  Hello
-                </Typography>
-                <Typography
-                  variant="h5"
-                  color={colors.greenAccent[500]}
-                >{`username`}</Typography>
-              </Box>
+              </Box> */}
+              {isLoggedIn && loginUser !== null && (
+                <Box textAlign="center">
+                  <Typography
+                    variant="h3"
+                    fontWeight="bold"
+                    color={colors.grey[100]}
+                    margin="10px 0 0 0"
+                  >
+                    Hello
+                  </Typography>
+                  <Typography variant="h5" color={colors.greenAccent[500]}>
+                    {loginUser}
+                  </Typography>
+                </Box>
+              )}
             </Box>
           )}
 
@@ -127,6 +155,18 @@ const Sidebar = () => {
                 </Box>
               );
             })}
+            <Box display="flex" justifyContent="center" mt="20px" gap="20px">
+              <Tooltip title="Logout">
+                <IconButton onClick={handleLogout}>
+                  <ExitToAppOutlinedIcon />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="User's Profile">
+                <IconButton onClick={() => navigate("/settings")}>
+                  <SettingsIcon />
+                </IconButton>
+              </Tooltip>
+            </Box>
           </Box>
         </Menu>
       </ProSidebar>

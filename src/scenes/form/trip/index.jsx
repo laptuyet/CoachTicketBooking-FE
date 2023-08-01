@@ -164,7 +164,6 @@ const TripForm = () => {
   // HANDLE FORM SUBMIT
   const handleFormSubmit = (values, { resetForm }) => {
     let { isEditMode, ...newValues } = values;
-    console.log(newValues);
     if (isAddMode) {
       mutation.mutate(newValues, {
         onSuccess: () => {

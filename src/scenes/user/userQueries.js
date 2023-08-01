@@ -20,6 +20,11 @@ const getUser = async (username) => {
     return resp.data
 }
 
+const getUserPermission = async (username) => {
+    const resp = await http.get(`/users/permission/${username}`)
+    return resp.data
+}
+
 const createNewUser = async (newUser) => {
     const resp = await http.post("/users", newUser)
     return resp.data
@@ -41,4 +46,7 @@ const checkDuplicateUserInfo = async (mode, userId, field, value) => {
     return resp.data // true: this field can be used, false: info is used by other user
 }
 
-export { getAll, getPageOfUser, getUser, createNewUser, updateUser, deleteUser, checkDuplicateUserInfo }
+export {
+    getAll, getPageOfUser, getUser, getUserPermission, createNewUser,
+    updateUser, deleteUser, checkDuplicateUserInfo
+}

@@ -12,7 +12,7 @@ import AccessibleIcon from '@mui/icons-material/Accessible';
 export const sidebarItems = [
     {
         title: 'Dashboard',
-        to: '/',
+        to: '/dashboard',
         icon: HomeOutlinedIcon
     },
     {

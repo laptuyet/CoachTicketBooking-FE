@@ -33,6 +33,7 @@ import { tokens } from "../../theme";
 import { handleToast } from "../../utils/helpers";
 import { useQueryString } from "../../utils/useQueryString";
 import * as driverApi from "./driverQueries";
+import { hasPermissionToDoAction } from "../../utils/CrudPermission";
 
 const Driver = () => {
   const theme = useTheme();
@@ -42,6 +43,8 @@ const Driver = () => {
   const [selectedRow, setSelectedRow] = useState("");
   const [filtering, setFiltering] = useState("");
   const queryClient = useQueryClient();
+  const [openForbiddenModal, setOpenForbiddenModal] = useState(false);
+  const [forbiddenMessage, setForbiddenMessage] = useState("");
 
   // Columns
   const columns = useMemo(
@@ -131,7 +134,7 @@ const Driver = () => {
               <CustomToolTip title="Edit" placement="top">
                 <IconButton
                   onClick={() => {
-                    navigate(`${info.row.original.id}`);
+                    handleOpenUpdateForm(info.row.original.id);
                   }}
                 >
                   <EditOutlinedIcon />
@@ -140,8 +143,7 @@ const Driver = () => {
               <CustomToolTip title="Delete" placement="top">
                 <IconButton
                   onClick={() => {
-                    setSelectedRow(`${info.row.original.id}`);
-                    setOpenModal(!openModal);
+                    handleOpenDeleteForm(info.row.original.id);
                   }}
                 >
                   <DeleteOutlineOutlinedIcon />
@@ -185,6 +187,45 @@ const Driver = () => {
       queryKey: ["drivers", "all"],
       queryFn: () => driverApi.getAll(),
     });
+  };
+
+  const handleOpenAddNewForm = () => {
+    const hasAddPermission = hasPermissionToDoAction(
+      "CREATE",
+      location.pathname
+    );
+    if (hasAddPermission) navigate("new");
+    else {
+      setForbiddenMessage("You don't have permission to CREATE");
+      setOpenForbiddenModal(!openForbiddenModal);
+    }
+  };
+
+  const handleOpenUpdateForm = (selectedRow) => {
+    const hasUpdatePermission = hasPermissionToDoAction(
+      "UPDATE",
+      location.pathname
+    );
+
+    if (hasUpdatePermission) navigate(`${selectedRow}`);
+    else {
+      setForbiddenMessage("You don't have permission to UPDATE");
+      setOpenForbiddenModal(!openForbiddenModal);
+    }
+  };
+
+  const handleOpenDeleteForm = (selectedRow) => {
+    const hasDeletePermission = hasPermissionToDoAction(
+      "DELETE",
+      location.pathname
+    );
+    if (hasDeletePermission) {
+      setSelectedRow(selectedRow);
+      setOpenModal(!openModal);
+    } else {
+      setForbiddenMessage("You don't have permission to DELETE");
+      setOpenForbiddenModal(!openForbiddenModal);
+    }
   };
 
   // create deleteMutation
@@ -248,16 +289,17 @@ const Driver = () => {
             <SearchIcon />
           </IconButton>
         </Box>
-        <Link to="new" style={{ alignSelf: "end", marginBottom: "30px" }}>
-          <Button
-            variant="contained"
-            color="secondary"
-            startIcon={<AddIcon />}
-            size="large"
-          >
-            Add new
-          </Button>
-        </Link>
+        {/* <Link to="new" style={{ alignSelf: "end", marginBottom: "30px" }}> */}
+        <Button
+          onClick={handleOpenAddNewForm}
+          variant="contained"
+          color="secondary"
+          startIcon={<AddIcon />}
+          size="large"
+        >
+          Add new
+        </Button>
+        {/* </Link> */}
       </Box>
 
       {/* Table */}
@@ -335,6 +377,46 @@ const Driver = () => {
               Cancel
             </Button>
           </Box>
+        </Box>
+      </Modal>
+      {/* FORBIDDEN MODAL */}
+      <Modal
+        sx={{
+          "& .MuiBox-root": {
+            bgcolor:
+              theme.palette.mode === "dark" ? colors.blueAccent[700] : "#fff",
+          },
+        }}
+        open={openForbiddenModal}
+        onClose={() => setOpenForbiddenModal(!openForbiddenModal)}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 400,
+            borderRadius: "10px",
+            boxShadow: 24,
+            p: 4,
+          }}
+        >
+          <Typography
+            id="modal-modal-title"
+            variant="h4"
+            textAlign="center"
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+          >
+            <WarningRoundedIcon
+              sx={{ color: "#fbc02a", fontSize: "2.5rem", marginRight: "4px" }}
+            />
+            {forbiddenMessage}
+          </Typography>
         </Box>
       </Modal>
     </Box>

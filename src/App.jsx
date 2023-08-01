@@ -18,12 +18,57 @@ import TripForm from "./scenes/form/trip";
 import UserForm from "./scenes/form/user";
 import Sidebar from "./scenes/global/Sidebar";
 import Topbar from "./scenes/global/Topbar";
-import Payment from "./scenes/payment";
 import Report from "./scenes/report";
 import Ticket from "./scenes/ticket";
 import Trip from "./scenes/trip";
 import User from "./scenes/user";
 import { ColorModeContext, useMode } from "./theme";
+import useLogin from "./utils/useLogin";
+import { useLocation, Outlet, Navigate } from "react-router-dom";
+import Login from "./scenes/Login";
+import UserSettings from "./scenes/UserSettings";
+import NotAllowedAccess from "./scenes/NotAllowedAccess";
+import { SCREEN_PATH, ROLES } from "./utils/appContants";
+
+const hasReadAccessRoleToScreen = (permissions, pathname) => {
+  const roleKeys = Object.keys(permissions);
+  // admin is allowed to access all resources
+  if (roleKeys.includes(ROLES.ROLE_ADMIN)) return true;
+
+  if (!roleKeys.includes(ROLES.ROLE_READ)) return false;
+
+  // /objects, e.g: /trips, /users, ...
+  const commonPathName = "/".concat(pathname.split("/")[1]);
+
+  const allowedScreens = permissions[ROLES.ROLE_READ];
+  const currentScreen = SCREEN_PATH[commonPathName];
+  return allowedScreens.includes(currentScreen);
+};
+
+const ProtectedRoutes = () => {
+  const isLoggedIn = useLogin();
+  const location = useLocation();
+  let hasAccessPermission;
+  if (localStorage.getItem("permissions") !== null) {
+    const permissions = JSON.parse(
+      localStorage.getItem("permissions")?.toString()
+    );
+    hasAccessPermission = hasReadAccessRoleToScreen(
+      permissions,
+      location.pathname
+    );
+  } else hasAccessPermission = false;
+
+  return !isLoggedIn ? (
+    <Navigate to="/login" state={{ from: location }} />
+  ) : isLoggedIn && location.pathname === "/settings" ? (
+    <Outlet />
+  ) : isLoggedIn && !hasAccessPermission ? (
+    <Navigate to="/not-allowed" />
+  ) : (
+    <Outlet />
+  );
+};
 
 const App = () => {
   const [theme, colorMode] = useMode();
@@ -46,38 +91,42 @@ const App = () => {
               <Topbar />
               <Routes>
                 <Route path="/">
-                  <Route index element={<DashBoard />} />
-                  <Route path="drivers">
-                    <Route index element={<Driver />} />
-                    <Route path=":driverId" element={<DriverForm />} />
-                    <Route path="new" element={<DriverForm />} />
-                  </Route>
-                  <Route path="trips">
-                    <Route index element={<Trip />} />
-                    <Route path=":tripId" element={<TripForm />} />
-                    <Route path="new" element={<TripForm />} />
-                  </Route>
-                  <Route path="tickets">
-                    <Route index element={<Ticket />} />
-                    <Route path=":bookingId" element={<BookingForm />} />
-                    <Route path="new" element={<StepperBooking />} />
-                  </Route>
-                  <Route path="coaches">
-                    <Route index element={<Bus />} />
-                    <Route path=":coachId" element={<CoachForm />} />
-                    <Route path="new" element={<CoachForm />} />
-                  </Route>
-                  {/* <Route path="payments" element={<Payment />} /> */}
-                  <Route path="discounts">
-                    <Route index element={<Discount />} />
-                    <Route path=":discountId" element={<DiscountForm />} />
-                    <Route path="new" element={<DiscountForm />} />
-                  </Route>
-                  <Route path="reports" element={<Report />} />
-                  <Route path="users">
-                    <Route index element={<User />} />
-                    <Route path=":username" element={<UserForm />} />
-                    <Route path="new" element={<UserForm />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/not-allowed" element={<NotAllowedAccess />} />
+                  <Route element={<ProtectedRoutes />}>
+                    <Route path="dashboard" element={<DashBoard />} />
+                    <Route path="settings" element={<UserSettings />} />
+                    <Route path="drivers">
+                      <Route index element={<Driver />} />
+                      <Route path=":driverId" element={<DriverForm />} />
+                      <Route path="new" element={<DriverForm />} />
+                    </Route>
+                    <Route path="trips">
+                      <Route index element={<Trip />} />
+                      <Route path=":tripId" element={<TripForm />} />
+                      <Route path="new" element={<TripForm />} />
+                    </Route>
+                    <Route path="tickets">
+                      <Route index element={<Ticket />} />
+                      <Route path=":bookingId" element={<BookingForm />} />
+                      <Route path="new" element={<StepperBooking />} />
+                    </Route>
+                    <Route path="coaches">
+                      <Route index element={<Bus />} />
+                      <Route path=":coachId" element={<CoachForm />} />
+                      <Route path="new" element={<CoachForm />} />
+                    </Route>
+                    <Route path="discounts">
+                      <Route index element={<Discount />} />
+                      <Route path=":discountId" element={<DiscountForm />} />
+                      <Route path="new" element={<DiscountForm />} />
+                    </Route>
+                    <Route path="reports" element={<Report />} />
+                    <Route path="users">
+                      <Route index element={<User />} />
+                      <Route path=":username" element={<UserForm />} />
+                      <Route path="new" element={<UserForm />} />
+                    </Route>
                   </Route>
                 </Route>
               </Routes>

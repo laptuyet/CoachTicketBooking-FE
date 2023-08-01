@@ -2,8 +2,8 @@ import SquareIcon from "@mui/icons-material/Square";
 import { Box, Typography } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import React, { memo, useCallback, useMemo, useState } from "react";
-import Bed_Limousine_Seat_Data from "../../../form/booking/SeatModels/Bed_Limousine_Seat_Data";
-import SeatModel from "../../../form/booking/SeatModels/SeatModel";
+import Bed_Limousine_Seat_Data from "../SeatModels/Bed_Limousine_Seat_Data";
+import SeatModel from "../SeatModels/SeatModel";
 import * as bookingApi from "../../../ticket/ticketQueries";
 
 const MAX_SEAT_SELECT = 5;

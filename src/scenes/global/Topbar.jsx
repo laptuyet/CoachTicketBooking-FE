@@ -31,9 +31,6 @@ const Topbar = () => {
             <DarkModeOutlinedIcon />
           )}
         </IconButton>
-        <IconButton>
-          <PersonOutlinedIcon />
-        </IconButton>
       </Box>
     </Box>
   );
