@@ -25,6 +25,11 @@ const getUserPermission = async (username) => {
     return resp.data
 }
 
+const updateUserPermission = async (permissionObject) => {
+    const resp = await http.post(`/users/permission`, permissionObject)
+    return resp.data
+}
+
 const createNewUser = async (newUser) => {
     const resp = await http.post("/users", newUser)
     return resp.data
@@ -47,6 +52,6 @@ const checkDuplicateUserInfo = async (mode, userId, field, value) => {
 }
 
 export {
-    getAll, getPageOfUser, getUser, getUserPermission, createNewUser,
-    updateUser, deleteUser, checkDuplicateUserInfo
+    getAll, getPageOfUser, getUser, getUserPermission, updateUserPermission
+    , createNewUser, updateUser, deleteUser, checkDuplicateUserInfo
 }
