@@ -16,7 +16,7 @@ import {
 import { useMutation } from "@tanstack/react-query";
 import { Formik } from "formik";
 import React, { useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate, useNavigate, Link } from "react-router-dom";
 import * as yup from "yup";
 import * as authApi from "../../scenes/global/authQueries";
 import { tokens } from "../../theme";
@@ -31,15 +31,18 @@ const initialValues = {
   password: "",
 };
 
+const checkActiveStatusDebounced = debounce(authApi.checkActiveStatus, 500);
+
 const checkExistUsernameDebounced = debounce(authApi.checkExistUsername, 500);
 
 const authSchema = yup.object().shape({
   username: yup
     .string()
     .required("Required")
-    .test("username", "Username is not exist", async (value) => {
+    .test("username", "Username is not exist or blocked", async (value) => {
       const isAvailable = await checkExistUsernameDebounced(value);
-      return isAvailable;
+      const isActive = await checkActiveStatusDebounced(value);
+      return isAvailable && isActive;
     }),
   password: yup.string().required("Required"),
 });
@@ -205,6 +208,27 @@ const Login = () => {
                 >
                   Login
                 </Button>
+              </Box>
+              <Box
+                mb="20px"
+                display="flex"
+                gridColumn="span 4"
+                textAlign="center"
+                justifyContent="center"
+                flexDirection="column"
+                gap="10px"
+              >
+                <Box>
+                  <Typography component="span" variant="h5">
+                    Forgot your account ?
+                    <Link to="/forgot" style={{ textDecoration: "none" }}>
+                      <Typography component="span" variant="h5">
+                        {" "}
+                        Reset Password
+                      </Typography>
+                    </Link>
+                  </Typography>
+                </Box>
               </Box>
             </Box>
           </form>

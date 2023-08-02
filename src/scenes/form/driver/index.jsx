@@ -69,7 +69,7 @@ const userScheme = yup.object().shape({
   email: yup
     .string()
     .required("Required")
-    .email("Invalid email")
+    .matches(APP_CONSTANTS.EMAIL_REGEX, "Invalid Email")
     .test("email", "Email is already used", async (value, ctx) => {
       const isAvailable = await checkDuplicateEmailDebounced(
         ctx.parent.isEditMode ? "EDIT" : "ADD",

@@ -15,6 +15,7 @@ import { tokens } from "../../theme";
 import { sidebarItems } from "./sidebarItems";
 import useLogin from "../../utils/useLogin";
 import ExitToAppOutlinedIcon from "@mui/icons-material/ExitToAppOutlined";
+import PasswordIcon from "@mui/icons-material/Password";
 import SettingsIcon from "@mui/icons-material/Settings";
 import * as authApi from "./authQueries";
 import { useNavigate } from "react-router-dom";
@@ -155,7 +156,13 @@ const Sidebar = () => {
                 </Box>
               );
             })}
-            <Box display="flex" justifyContent="center" mt="20px" gap="20px">
+            <Box
+              display="flex"
+              justifyContent="center"
+              mt="20px"
+              gap="20px"
+              flexDirection={isCollapsed ? "column" : "row"}
+            >
               <Tooltip title="Logout">
                 <IconButton onClick={handleLogout}>
                   <ExitToAppOutlinedIcon />
@@ -164,6 +171,11 @@ const Sidebar = () => {
               <Tooltip title="User's Profile">
                 <IconButton onClick={() => navigate("/settings")}>
                   <SettingsIcon />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Change Password">
+                <IconButton onClick={() => navigate("/change-password")}>
+                  <PasswordIcon />
                 </IconButton>
               </Tooltip>
             </Box>

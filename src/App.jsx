@@ -2,9 +2,12 @@ import { CssBaseline, ThemeProvider } from "@mui/material";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import React from "react";
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Outlet, Route, Routes, useLocation } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Login from "./scenes/Login";
+import NotAllowedAccess from "./scenes/NotAllowedAccess";
+import UserSettings from "./scenes/UserSettings";
 import Bus from "./scenes/bus";
 import DashBoard from "./scenes/dashboard";
 import Discount from "./scenes/discount";
@@ -23,12 +26,10 @@ import Ticket from "./scenes/ticket";
 import Trip from "./scenes/trip";
 import User from "./scenes/user";
 import { ColorModeContext, useMode } from "./theme";
+import { ROLES, SCREEN_PATH } from "./utils/appContants";
 import useLogin from "./utils/useLogin";
-import { useLocation, Outlet, Navigate } from "react-router-dom";
-import Login from "./scenes/Login";
-import UserSettings from "./scenes/UserSettings";
-import NotAllowedAccess from "./scenes/NotAllowedAccess";
-import { SCREEN_PATH, ROLES } from "./utils/appContants";
+import ChangePassword from "./scenes/ChangePassword";
+import ForgotPwd from "./scenes/ForgotPwd";
 
 const hasReadAccessRoleToScreen = (permissions, pathname) => {
   const roleKeys = Object.keys(permissions);
@@ -92,10 +93,15 @@ const App = () => {
               <Routes>
                 <Route path="/">
                   <Route path="/login" element={<Login />} />
+                  <Route path="/forgot" element={<ForgotPwd />} />
                   <Route path="/not-allowed" element={<NotAllowedAccess />} />
                   <Route element={<ProtectedRoutes />}>
                     <Route path="dashboard" element={<DashBoard />} />
                     <Route path="settings" element={<UserSettings />} />
+                    <Route
+                      path="change-password"
+                      element={<ChangePassword />}
+                    />
                     <Route path="drivers">
                       <Route index element={<Driver />} />
                       <Route path=":driverId" element={<DriverForm />} />

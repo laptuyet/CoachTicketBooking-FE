@@ -86,7 +86,7 @@ const userScheme = yup.object().shape({
   email: yup
     .string()
     .required("Required")
-    .email("Invalid email")
+    .matches(APP_CONSTANTS.EMAIL_REGEX, "Invalid Email")
     .test("email", "Email is already used", async (value, ctx) => {
       const isAvailable = await checkDuplicateEmailDebounced(
         ctx.parent.isEditMode ? "EDIT" : "ADD",
@@ -450,49 +450,50 @@ const UserForm = () => {
                 error={!!touched.username && !!errors.username}
                 helperText={touched.username && errors.username}
                 sx={{
-                  gridColumn: "span 2",
+                  gridColumn: isAddMode ? "span 2" : "span 4",
                 }}
                 disabled={!isAddMode}
               />
-
-              <FormControl
-                color="warning"
-                sx={{ gridColumn: "span 2" }}
-                variant="outlined"
-                size="small"
-              >
-                <InputLabel
-                  error={!!touched.password && !!errors.password}
-                  htmlFor="outlined-adornment-password"
+              {isAddMode && (
+                <FormControl
+                  color="warning"
+                  sx={{ gridColumn: "span 2" }}
+                  variant="outlined"
+                  size="small"
                 >
-                  Password
-                </InputLabel>
-                <OutlinedInput
-                  id="outlined-adornment-password"
-                  type={showPwd ? "text" : "password"}
-                  label="Password"
-                  fullWidth
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  value={values.password}
-                  name="password"
-                  error={!!touched.password && !!errors.password}
-                  endAdornment={
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle password visibility"
-                        onClick={() => setShowPwd(!showPwd)}
-                        edge="end"
-                      >
-                        {showPwd ? <VisibilityOffIcon /> : <VisibilityIcon />}
-                      </IconButton>
-                    </InputAdornment>
-                  }
-                />
-                {!!touched.password && !!errors.password && (
-                  <FormHelperText error>{errors.password}</FormHelperText>
-                )}
-              </FormControl>
+                  <InputLabel
+                    error={!!touched.password && !!errors.password}
+                    htmlFor="outlined-adornment-password"
+                  >
+                    Password
+                  </InputLabel>
+                  <OutlinedInput
+                    id="outlined-adornment-password"
+                    type={showPwd ? "text" : "password"}
+                    label="Password"
+                    fullWidth
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.password}
+                    name="password"
+                    error={!!touched.password && !!errors.password}
+                    endAdornment={
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={() => setShowPwd(!showPwd)}
+                          edge="end"
+                        >
+                          {showPwd ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                        </IconButton>
+                      </InputAdornment>
+                    }
+                  />
+                  {!!touched.password && !!errors.password && (
+                    <FormHelperText error>{errors.password}</FormHelperText>
+                  )}
+                </FormControl>
+              )}
             </Box>
             <Box mt="20px" display="flex" justifyContent="center">
               <LoadingButton

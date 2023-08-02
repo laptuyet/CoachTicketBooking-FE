@@ -40,6 +40,13 @@ import * as ticketApi from "./ticketQueries";
 import { parse, format } from "date-fns";
 import { hasPermissionToDoAction } from "../../utils/CrudPermission";
 
+const getBookingDateFormat = (bookingDateTime) => {
+  return format(
+    parse(bookingDateTime, "yyyy-MM-dd HH:mm", new Date()),
+    "dd/MM/yyyy"
+  );
+};
+
 const Ticket = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -133,6 +140,7 @@ const Ticket = () => {
                 <IconButton
                   onClick={() => {
                     setSelectedTrip(id);
+                    setSelectedRow(info.row.original.id);
                     setOpenTripModal(!openTripModal);
                   }}
                 >
@@ -443,7 +451,7 @@ const Ticket = () => {
                   gridColumn: "span 4",
                 }}
               />
-              {/* <TextField
+              <TextField
                 color="warning"
                 size="small"
                 fullWidth
@@ -455,7 +463,7 @@ const Ticket = () => {
                 sx={{
                   gridColumn: "span 4",
                 }}
-              /> */}
+              />
               <TextField
                 color="warning"
                 size="small"
@@ -541,6 +549,21 @@ const Ticket = () => {
                 value={tripQuery?.data?.destination.name}
                 sx={{
                   gridColumn: "span 2",
+                }}
+              />
+              <TextField
+                color="warning"
+                size="small"
+                fullWidth
+                variant="outlined"
+                type="text"
+                label="Departure DateTime"
+                name="bookingDateTime"
+                value={`${
+                  tripQuery?.data?.departureTime
+                } ${getBookingDateFormat(bookingQuery?.data?.bookingDateTime)}`}
+                sx={{
+                  gridColumn: "span 4",
                 }}
               />
               <TextField

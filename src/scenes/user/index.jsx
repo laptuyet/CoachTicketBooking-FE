@@ -154,16 +154,18 @@ const User = () => {
           return (
             <Box display="flex" alignItems="center" justifyContent="center">
               {mainRole}
-              <CustomToolTip title="Role Setup" placement="top">
-                <IconButton
-                  onClick={() => {
-                    setSelectedRow(info.row.original.username);
-                    setOpenRoleSetupModal(!openRoleSetupModal);
-                  }}
-                >
-                  <AdminPanelSettingsOutlinedIcon />
-                </IconButton>
-              </CustomToolTip>
+              {mainRole === "STAFF" && (
+                <CustomToolTip title="Role Setup" placement="top">
+                  <IconButton
+                    onClick={() => {
+                      setSelectedRow(info.row.original.username);
+                      setOpenRoleSetupModal(!openRoleSetupModal);
+                    }}
+                  >
+                    <AdminPanelSettingsOutlinedIcon />
+                  </IconButton>
+                </CustomToolTip>
+              )}
             </Box>
           );
         },
@@ -190,7 +192,18 @@ const User = () => {
               <CustomToolTip title="Delete" placement="top">
                 <IconButton
                   onClick={() => {
-                    handleOpenDeleteForm(info.row.original.username);
+                    const loginUser = localStorage.getItem("loginUser");
+                    if (loginUser === info.row.original.username) {
+                      setForbiddenMessage(
+                        "Can't not delete current login user"
+                      );
+                      setOpenForbiddenModal(!openForbiddenModal);
+                    } else if (info.row.original.username === "admin") {
+                      setForbiddenMessage("Can't not delete ADMIN");
+                      setOpenForbiddenModal(!openForbiddenModal);
+                    } else {
+                      handleOpenDeleteForm(info.row.original.username);
+                    }
                   }}
                 >
                   <DeleteOutlineOutlinedIcon />

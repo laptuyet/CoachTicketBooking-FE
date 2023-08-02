@@ -10,8 +10,23 @@ const register = async (registerReq) => {
     return resp.data
 }
 
+const forgot = async (email) => {
+    const resp = await http.post("/auth/forgot", email)
+    return resp.data
+}
+
+const changePwd = async (changePwdRequest) => {
+    const resp = await http.post("/auth/change-password", changePwdRequest)
+    return resp.data
+}
+
 const logout = () => {
     http.post("/auth/logout")
+}
+
+const checkActiveStatus = async (username) => {
+    const resp = await http.get(`/auth/checkActiveStatus/${username}`)
+    return resp.data
 }
 
 const checkExistUsername = async (username) => {
@@ -30,4 +45,7 @@ const checkExistPhone = async (phone) => {
 }
 
 
-export { login, register, logout, checkExistUsername, checkExistEmail, checkExistPhone }
+export {
+    login, register, checkActiveStatus, logout, forgot, changePwd,
+    checkExistUsername, checkExistEmail, checkExistPhone
+}
