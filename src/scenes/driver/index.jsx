@@ -9,6 +9,7 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import MaleOutlinedIcon from "@mui/icons-material/MaleOutlined";
 import SearchIcon from "@mui/icons-material/Search";
 import WarningRoundedIcon from "@mui/icons-material/WarningRounded";
+import CloseIcon from "@mui/icons-material/Close";
 import {
   Box,
   Button,
@@ -108,17 +109,17 @@ const Driver = () => {
         isEllipsis: true,
       },
       {
-        header: "Active",
+        header: "Working",
         accessorKey: "quit",
-        footer: "Active",
+        footer: "Working",
         width: 60,
         maxWidth: 150,
         align: "center",
         cell: (info) =>
-          info.getValue() ? (
+          !info.getValue() ? (
             <CheckOutlinedIcon sx={{ color: "#00e330" }} />
           ) : (
-            <LockOutlinedIcon sx={{ color: "#eb0014" }} />
+            <CloseIcon sx={{ color: "#eb0014" }} />
           ),
       },
       {

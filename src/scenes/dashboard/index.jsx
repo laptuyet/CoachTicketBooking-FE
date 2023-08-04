@@ -14,6 +14,7 @@ import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
 import * as driverApi from "../driver/driverQueries";
 import * as userApi from "../user/userQueries";
 import * as coachApi from "../bus/coachQueries";
+import { ROLES, SCREENS } from "../../utils/appContants";
 
 const DashBoard = () => {
   const theme = useTheme();
@@ -50,6 +51,33 @@ const DashBoard = () => {
     queryFn: () => userApi.getAll(),
   });
 
+  const hasMainRoleInPermissionList = (mainRole, permissions) => {
+    return permissions.some(
+      (permission) => permission.role.roleCode === mainRole
+    );
+  };
+
+  const getAllAvailableDriver = (originalDriverList) => {
+    const allAvailableDriver = originalDriverList.filter(
+      (driver) => !driver.quit
+    );
+    return allAvailableDriver.length;
+  };
+
+  const getAllAvailableStaff = (originalUserList) => {
+    const totalStaff = originalUserList.filter((staff) =>
+      hasMainRoleInPermissionList(ROLES.ROLE_STAFF, staff.permissions)
+    );
+    return totalStaff.length;
+  };
+
+  const getAllAvailableCustomer = (originalUserList) => {
+    const totalCust = originalUserList.filter((cust) =>
+      hasMainRoleInPermissionList(ROLES.ROLE_CUSTOMER, cust.permissions)
+    );
+    return totalCust.length;
+  };
+
   return (
     <Box m="20px">
       <Header title="DASHBOARD" subTitle="Welcome to your dashboard" />
@@ -61,7 +89,7 @@ const DashBoard = () => {
       >
         <Box
           borderRadius="5px"
-          gridColumn="span 4"
+          gridColumn="span 3"
           display="flex"
           flexDirection="column"
           justifyContent="center"
@@ -70,22 +98,24 @@ const DashBoard = () => {
             backgroundColor: colors.primary[400],
           }}
         >
-          <StatBox
-            icon={
-              <AccessibleIcon
-                sx={{
-                  width: "60px",
-                  height: "60px",
-                }}
-              />
-            }
-            content={"Total Driver"}
-            value={totalDriverQuery?.data?.length ?? 0}
-          />
+          {totalDriverQuery?.data ? (
+            <StatBox
+              icon={
+                <AccessibleIcon
+                  sx={{
+                    width: "60px",
+                    height: "60px",
+                  }}
+                />
+              }
+              content={"Total Driver"}
+              value={getAllAvailableDriver(totalDriverQuery.data)}
+            />
+          ) : undefined}
         </Box>
         <Box
           borderRadius="5px"
-          gridColumn="span 4"
+          gridColumn="span 3"
           display="flex"
           flexDirection="column"
           justifyContent="center"
@@ -94,22 +124,24 @@ const DashBoard = () => {
             backgroundColor: colors.primary[400],
           }}
         >
-          <StatBox
-            icon={
-              <BusOutlinedIcon
-                sx={{
-                  width: "60px",
-                  height: "60px",
-                }}
-              />
-            }
-            content={"Total Coach"}
-            value={totalCoachQuery?.data?.length ?? 0}
-          />
+          {totalCoachQuery?.data ? (
+            <StatBox
+              icon={
+                <BusOutlinedIcon
+                  sx={{
+                    width: "60px",
+                    height: "60px",
+                  }}
+                />
+              }
+              content={"Total Coach"}
+              value={totalCoachQuery.data.length}
+            />
+          ) : undefined}
         </Box>
         <Box
           borderRadius="5px"
-          gridColumn="span 4"
+          gridColumn="span 3"
           display="flex"
           flexDirection="column"
           justifyContent="center"
@@ -118,18 +150,46 @@ const DashBoard = () => {
             backgroundColor: colors.primary[400],
           }}
         >
-          <StatBox
-            icon={
-              <PeopleAltOutlinedIcon
-                sx={{
-                  width: "60px",
-                  height: "60px",
-                }}
-              />
-            }
-            content={"Total User "}
-            value={totalUserQuery?.data?.length ?? 0}
-          />
+          {totalUserQuery?.data ? (
+            <StatBox
+              icon={
+                <PeopleAltOutlinedIcon
+                  sx={{
+                    width: "60px",
+                    height: "60px",
+                  }}
+                />
+              }
+              content={"Total Staff"}
+              value={getAllAvailableStaff(totalUserQuery.data)}
+            />
+          ) : undefined}
+        </Box>
+        <Box
+          borderRadius="5px"
+          gridColumn="span 3"
+          display="flex"
+          flexDirection="column"
+          justifyContent="center"
+          alignItems="center"
+          sx={{
+            backgroundColor: colors.primary[400],
+          }}
+        >
+          {totalUserQuery?.data ? (
+            <StatBox
+              icon={
+                <PeopleAltOutlinedIcon
+                  sx={{
+                    width: "60px",
+                    height: "60px",
+                  }}
+                />
+              }
+              content={"Total Customer"}
+              value={getAllAvailableCustomer(totalUserQuery.data)}
+            />
+          ) : undefined}
         </Box>
 
         <Box
@@ -144,12 +204,12 @@ const DashBoard = () => {
             backgroundColor: colors.primary[400],
           }}
         >
-          {weekRevenueQuery.isSuccess && (
+          {weekRevenueQuery?.data ? (
             <BarChart
               title="Week Revenue"
-              entries={weekRevenueQuery?.data.reportData}
+              entries={weekRevenueQuery.data.reportData}
             />
-          )}
+          ) : undefined}
         </Box>
         <Box
           borderRadius="5px"

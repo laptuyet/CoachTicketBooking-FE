@@ -212,6 +212,7 @@ const UserForm = () => {
               }}
             >
               <TextField
+                disabled={!isAddMode}
                 color="warning"
                 size="small"
                 fullWidth
@@ -229,6 +230,7 @@ const UserForm = () => {
                 }}
               />
               <TextField
+                disabled={!isAddMode}
                 color="warning"
                 size="small"
                 fullWidth
@@ -246,6 +248,7 @@ const UserForm = () => {
                 }}
               />
               <TextField
+                disabled={!isAddMode}
                 color="warning"
                 size="small"
                 fullWidth
@@ -263,6 +266,7 @@ const UserForm = () => {
                 }}
               />
               <TextField
+                disabled={!isAddMode}
                 color="warning"
                 size="small"
                 fullWidth
@@ -287,6 +291,7 @@ const UserForm = () => {
               >
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
                   <DatePicker
+                    disabled={!isAddMode}
                     format="dd/MM/yyyy"
                     label="Day of Birth"
                     maxDate={new Date()}
@@ -323,6 +328,7 @@ const UserForm = () => {
               </FormControl>
 
               <TextField
+                disabled={!isAddMode}
                 color="warning"
                 size="small"
                 fullWidth
@@ -340,6 +346,7 @@ const UserForm = () => {
                 }}
               />
               <FormControl
+                disabled={!isAddMode}
                 sx={{
                   gridColumn: isAddMode ? "span 4" : "span 2",
                 }}
@@ -386,6 +393,7 @@ const UserForm = () => {
                   />
                 </RadioGroup>
               </FormControl>
+
               {!isAddMode && (
                 <FormControl
                   sx={{

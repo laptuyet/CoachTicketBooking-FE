@@ -77,6 +77,11 @@ const User = () => {
       return "CUSTOMER";
   };
 
+  const hasRoleAdmin = (savedPermissions) => {
+    const roleKeys = Object.keys(savedPermissions);
+    return roleKeys.some((role) => role === ROLES.ROLE_ADMIN);
+  };
+
   // Columns
   const columns = useMemo(
     () => [
@@ -151,10 +156,13 @@ const User = () => {
         maxWidth: 300,
         cell: (info) => {
           const mainRole = getMainRole(info.row.original.permissions);
+          const isAdmin = hasRoleAdmin(
+            JSON.parse(localStorage.getItem("permissions"))
+          );
           return (
             <Box display="flex" alignItems="center" justifyContent="center">
               {mainRole}
-              {mainRole === "STAFF" && (
+              {mainRole === "STAFF" && isAdmin && (
                 <CustomToolTip title="Role Setup" placement="top">
                   <IconButton
                     onClick={() => {
@@ -178,37 +186,42 @@ const User = () => {
         maxWidth: 250,
         align: "center",
         cell: (info) => {
+          const mainRole = getMainRole(info.row.original.permissions);
           return (
             <Box>
-              <CustomToolTip title="Edit" placement="top">
-                <IconButton
-                  onClick={() => {
-                    handleOpenUpdateForm(info.row.original.username);
-                  }}
-                >
-                  <EditOutlinedIcon />
-                </IconButton>
-              </CustomToolTip>
-              <CustomToolTip title="Delete" placement="top">
-                <IconButton
-                  onClick={() => {
-                    const loginUser = localStorage.getItem("loginUser");
-                    if (loginUser === info.row.original.username) {
-                      setForbiddenMessage(
-                        "Can't not delete current login user"
-                      );
-                      setOpenForbiddenModal(!openForbiddenModal);
-                    } else if (info.row.original.username === "admin") {
-                      setForbiddenMessage("Can't not delete ADMIN");
-                      setOpenForbiddenModal(!openForbiddenModal);
-                    } else {
-                      handleOpenDeleteForm(info.row.original.username);
-                    }
-                  }}
-                >
-                  <DeleteOutlineOutlinedIcon />
-                </IconButton>
-              </CustomToolTip>
+              {mainRole !== "ADMIN" && (
+                <>
+                  <CustomToolTip title="Edit" placement="top">
+                    <IconButton
+                      onClick={() => {
+                        handleOpenUpdateForm(info.row.original.username);
+                      }}
+                    >
+                      <EditOutlinedIcon />
+                    </IconButton>
+                  </CustomToolTip>
+                  <CustomToolTip title="Delete" placement="top">
+                    <IconButton
+                      onClick={() => {
+                        const loginUser = localStorage.getItem("loginUser");
+                        if (loginUser === info.row.original.username) {
+                          setForbiddenMessage(
+                            "Can't not delete current login user"
+                          );
+                          setOpenForbiddenModal(!openForbiddenModal);
+                        } else if (info.row.original.username === "admin") {
+                          setForbiddenMessage("Can't not delete ADMIN");
+                          setOpenForbiddenModal(!openForbiddenModal);
+                        } else {
+                          handleOpenDeleteForm(info.row.original.username);
+                        }
+                      }}
+                    >
+                      <DeleteOutlineOutlinedIcon />
+                    </IconButton>
+                  </CustomToolTip>
+                </>
+              )}
             </Box>
           );
         },
@@ -370,6 +383,12 @@ const User = () => {
       },
     });
   };
+
+  // const getAllStaffs = (userList) => {
+  //   return userList.filter((user) =>
+  //     hasMainRoleInPermissionList(ROLES.ROLE_STAFF, user.permissions)
+  //   );
+  // };
 
   const table = useReactTable({
     data: data?.dataList ?? [], // if data is not available, provide empty dataList []

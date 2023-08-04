@@ -223,7 +223,7 @@ const PaymentForm = ({ field, setActiveStep, bookingData, setBookingData }) => {
                 }
                 label="CASH"
               />
-              <FormControlLabel
+              {/* <FormControlLabel
                 value="CARD"
                 control={
                   <Radio
@@ -236,7 +236,7 @@ const PaymentForm = ({ field, setActiveStep, bookingData, setBookingData }) => {
                   />
                 }
                 label="CARD"
-              />
+              /> */}
             </RadioGroup>
           </FormControl>
 
@@ -291,7 +291,7 @@ const PaymentForm = ({ field, setActiveStep, bookingData, setBookingData }) => {
           </FormControl>
 
           {/* name on card */}
-          <TextField
+          {/* <TextField
             color="warning"
             size="small"
             fullWidth
@@ -308,10 +308,10 @@ const PaymentForm = ({ field, setActiveStep, bookingData, setBookingData }) => {
               display: cardPaymentSelect ? "initial" : "none",
               gridColumn: "span 2",
             }}
-          />
+          /> */}
 
           {/* card number */}
-          <TextField
+          {/* <TextField
             color="warning"
             size="small"
             fullWidth
@@ -328,10 +328,10 @@ const PaymentForm = ({ field, setActiveStep, bookingData, setBookingData }) => {
               display: cardPaymentSelect ? "initial" : "none",
               gridColumn: "span 2",
             }}
-          />
+          /> */}
 
           {/* expired date */}
-          <FormControl
+          {/* <FormControl
             fullWidth
             sx={{
               display: cardPaymentSelect ? "initial" : "none",
@@ -369,10 +369,10 @@ const PaymentForm = ({ field, setActiveStep, bookingData, setBookingData }) => {
             {!!touched.expiredDate && !!errors.expiredDate && (
               <FormHelperText error>{errors.expiredDate}</FormHelperText>
             )}
-          </FormControl>
+          </FormControl> */}
 
           {/* cvv */}
-          <TextField
+          {/* <TextField
             color="warning"
             size="small"
             fullWidth
@@ -389,7 +389,7 @@ const PaymentForm = ({ field, setActiveStep, bookingData, setBookingData }) => {
               display: cardPaymentSelect ? "initial" : "none",
               gridColumn: "span 2",
             }}
-          />
+          /> */}
         </Box>
       </Box>
     </>

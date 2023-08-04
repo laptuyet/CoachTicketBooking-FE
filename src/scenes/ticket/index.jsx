@@ -57,7 +57,7 @@ const Ticket = () => {
   const [openBookingModal, setOpenBookingModal] = useState(false);
   const [selectedRow, setSelectedRow] = useState("");
   // const [selectedUser, setSelectedUser] = useState("");
-  const [selectedTrip, setSelectedTrip] = useState("");
+  // const [selectedTrip, setSelectedTrip] = useState("");
   const [filtering, setFiltering] = useState("");
   const [openForbiddenModal, setOpenForbiddenModal] = useState(false);
   const [forbiddenMessage, setForbiddenMessage] = useState("");
@@ -76,11 +76,11 @@ const Ticket = () => {
   //   enabled: selectedUser !== "",
   // });
 
-  const tripQuery = useQuery({
-    queryKey: ["trips", selectedTrip],
-    queryFn: () => tripApi.getTrip(selectedTrip),
-    enabled: selectedTrip !== "",
-  });
+  // const tripQuery = useQuery({
+  //   queryKey: ["trips", selectedTrip],
+  //   queryFn: () => tripApi.getTrip(selectedTrip),
+  //   enabled: selectedTrip !== "",
+  // });
 
   // Columns
   const columns = useMemo(
@@ -139,7 +139,7 @@ const Ticket = () => {
               <CustomToolTip title="Detail" placement="top">
                 <IconButton
                   onClick={() => {
-                    setSelectedTrip(id);
+                    // setSelectedTrip(id);
                     setSelectedRow(info.row.original.id);
                     setOpenTripModal(!openTripModal);
                   }}
@@ -234,7 +234,7 @@ const Ticket = () => {
     pageSize: limit,
   });
 
-  // Get page of Trip
+  // Get page of Bookings
   const { data } = useQuery({
     queryKey: ["bookings", pagination],
     queryFn: () => {
@@ -510,7 +510,7 @@ const Ticket = () => {
           <Box textAlign="center" marginBottom="30px">
             <Typography variant="h4">TRIP DETAIL</Typography>
           </Box>
-          {tripQuery.isLoading ? (
+          {bookingQuery.isLoading ? (
             <Stack spacing={1}>
               {/* For variant="text", adjust the height via font-size */}
               <Skeleton variant="text" sx={{ fontSize: "1rem" }} />
@@ -533,7 +533,7 @@ const Ticket = () => {
                 type="text"
                 label="From"
                 name="from"
-                value={tripQuery?.data?.source.name}
+                value={bookingQuery?.data?.trip.source.name}
                 sx={{
                   gridColumn: "span 2",
                 }}
@@ -546,7 +546,7 @@ const Ticket = () => {
                 type="text"
                 label="To"
                 name="to"
-                value={tripQuery?.data?.destination.name}
+                value={bookingQuery?.data?.trip.destination.name}
                 sx={{
                   gridColumn: "span 2",
                 }}
@@ -560,7 +560,7 @@ const Ticket = () => {
                 label="Departure DateTime"
                 name="bookingDateTime"
                 value={`${
-                  tripQuery?.data?.departureTime
+                  bookingQuery?.data?.trip.departureTime
                 } ${getBookingDateFormat(bookingQuery?.data?.bookingDateTime)}`}
                 sx={{
                   gridColumn: "span 4",
@@ -574,7 +574,7 @@ const Ticket = () => {
                 type="text"
                 label="Driver"
                 name="driver"
-                value={`${tripQuery?.data?.driver.firstName} ${tripQuery?.data?.driver.lastName}`}
+                value={`${bookingQuery?.data?.trip.driver.firstName} ${bookingQuery?.data?.trip.driver.lastName}`}
                 sx={{
                   gridColumn: "span 4",
                 }}
@@ -588,7 +588,7 @@ const Ticket = () => {
                 type="text"
                 label="Coach"
                 name="coach"
-                value={`${tripQuery?.data?.coach.name}\t\tTYPE:${tripQuery?.data?.coach.coachType}`}
+                value={`${bookingQuery?.data?.trip.coach.name}\t\tTYPE:${bookingQuery?.data?.trip.coach.coachType}`}
                 sx={{
                   gridColumn: "span 4",
                 }}
@@ -601,7 +601,7 @@ const Ticket = () => {
                 type="text"
                 label="Price"
                 name="price"
-                value={tripQuery?.data?.price}
+                value={bookingQuery?.data?.trip.price}
                 sx={{
                   gridColumn: "span 2",
                 }}
@@ -615,8 +615,8 @@ const Ticket = () => {
                 label="Discount"
                 name="discount"
                 value={
-                  tripQuery?.data?.discount
-                    ? tripQuery?.data?.discount.amount
+                  bookingQuery?.data?.trip.discount
+                    ? bookingQuery?.data?.trip.discount.amount
                     : "NONE"
                 }
                 sx={{

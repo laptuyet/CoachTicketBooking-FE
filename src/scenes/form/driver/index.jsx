@@ -403,6 +403,7 @@ const DriverForm = () => {
                   />
                 </RadioGroup>
               </FormControl>
+
               {!isAddMode && (
                 <FormControl
                   sx={{
@@ -410,7 +411,7 @@ const DriverForm = () => {
                   }}
                 >
                   <FormLabel color="warning" id="quit">
-                    Active
+                    Working
                   </FormLabel>
                   <RadioGroup
                     row
@@ -433,7 +434,7 @@ const DriverForm = () => {
                           }}
                         />
                       }
-                      label="False"
+                      label="True"
                     />
                     <FormControlLabel
                       value="true"
@@ -447,7 +448,7 @@ const DriverForm = () => {
                           }}
                         />
                       }
-                      label="True"
+                      label="False"
                     />
                   </RadioGroup>
                 </FormControl>

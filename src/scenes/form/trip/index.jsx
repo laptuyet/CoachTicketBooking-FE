@@ -112,38 +112,45 @@ const TripForm = () => {
   const handleDriverOpen = () => {
     if (!driverQuery.data) {
       setDriverClicked(true);
-      queryClient.prefetchQuery({
-        queryKey: ["drivers", "all"],
-        // queryFn: () => driverApi.getAll(),
-      });
+      // queryClient.prefetchQuery({
+      //   queryKey: ["drivers", "all"],
+      //   // queryFn: () => driverApi.getAll(),
+      // });
     }
   };
   const handleCoachOpen = () => {
     if (!coachQuery.data) {
       setCoachClicked(true);
-      queryClient.prefetchQuery({
-        queryKey: ["coaches", "all"],
-        // queryFn: () => coachApi.getAll(),
-      });
+      // queryClient.prefetchQuery({
+      //   queryKey: ["coaches", "all"],
+      //   // queryFn: () => coachApi.getAll(),
+      // });
     }
   };
   const handleProvinceOpen = () => {
     if (!provinceQuery.data) {
       setProvinceClicked(true);
-      queryClient.prefetchQuery({
-        queryKey: ["provinces", "all"],
-        // queryFn: () => provinceApi.getAll(),
-      });
+      // queryClient.prefetchQuery({
+      //   queryKey: ["provinces", "all"],
+      //   // queryFn: () => provinceApi.getAll(),
+      // });
     }
   };
   const handleDiscountOpen = () => {
     if (!disCountQuery.data) {
       setDiscountClicked(true);
-      queryClient.prefetchQuery({
-        queryKey: ["discounts", "all"],
-        // queryFn: () => provinceApi.getAll(),
-      });
+      // queryClient.prefetchQuery({
+      //   queryKey: ["discounts", "all"],
+      //   // queryFn: () => provinceApi.getAll(),
+      // });
     }
+  };
+
+  const getAllAvailableDriver = (originalDriverList) => {
+    const availableDrivers = originalDriverList.filter(
+      (driver) => !driver.quit
+    );
+    return availableDrivers;
   };
 
   // Load trip data when mode is EDIT
@@ -262,7 +269,7 @@ const TripForm = () => {
                     </span>
                   </Box>
                 )}
-                options={driverQuery.data ?? []}
+                options={getAllAvailableDriver(driverQuery.data ?? [])}
                 loading={driverClicked && driverQuery.isLoading}
                 sx={{
                   gridColumn: "span 2",

@@ -7,10 +7,10 @@ const StatBox = ({ icon, value, content }) => {
   const colors = tokens(theme.palette.mode);
 
   return (
-    <Box display="flex" justifyContent="center" alignItems="center" gap="80px">
+    <Box display="flex" justifyContent="center" alignItems="center" gap="40px">
       <Box color={colors.greenAccent[600]}>{icon}</Box>
       <Box>
-        <Typography variant="h3" color={colors.greenAccent[600]}>
+        <Typography variant="h4" color={colors.greenAccent[600]}>
           {content}
         </Typography>
         <Typography mt="10px" variant="h4" color={colors.grey[100]}>
