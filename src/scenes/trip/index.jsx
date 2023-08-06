@@ -30,6 +30,7 @@ import { handleToast } from "../../utils/helpers";
 import { useQueryString } from "../../utils/useQueryString";
 import * as tripApi from "./tripQueries";
 import { hasPermissionToDoAction } from "../../utils/CrudPermission";
+import { parse, format } from "date-fns";
 
 const Trip = () => {
   const theme = useTheme();
@@ -47,18 +48,6 @@ const Trip = () => {
   // Columns
   const columns = useMemo(
     () => [
-      // {
-      //   header: "Driver",
-      //   accessorKey: "driver",
-      //   footer: "Driver",
-      //   width: 100,
-      //   maxWidth: 200,
-      //   isEllipsis: true,
-      //   cell: (info) => {
-      //     const { firstName, lastName } = info.getValue();
-      //     return `${firstName} ${lastName}`;
-      //   },
-      // },
       {
         header: "Coach",
         accessorKey: "coach",
@@ -101,17 +90,23 @@ const Trip = () => {
         header: "Price",
         accessorKey: "price",
         footer: "Price",
-        width: 100,
+        width: 70,
         maxWidth: 200,
         align: "center",
       },
       {
-        header: "Departure Time",
-        accessorKey: "departureTime",
+        header: "Departure Date Time",
+        accessorKey: "departureDateTime",
         footer: "Departure Time",
-        width: 100,
+        width: 150,
         maxWidth: 200,
         align: "center",
+        cell: (info) => {
+          return format(
+            parse(info.getValue(), "yyyy-MM-dd HH:mm", new Date()),
+            "HH:mm dd-MM-yyyy"
+          );
+        },
       },
       {
         header: "Action",

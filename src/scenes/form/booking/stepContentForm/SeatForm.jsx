@@ -18,15 +18,10 @@ const SeatForm = ({ field, setActiveStep, bookingData, setBookingData }) => {
     }).format(finalPrice);
   };
 
-  const bookingDate = format(
-    parse(bookingDateTime, "yyyy-MM-dd HH:mm", new Date()),
-    "dd/MM/yyyy"
-  );
-
   return (
     <>
       {/* Summary Trip Info */}
-      <Box mt="10px">
+      <Box mt="10px" textAlign="center">
         <Typography component="span" variant="h5">
           <span style={{ fontWeight: "bold" }}>Route: </span>
           {`${trip.source.name} ${
@@ -34,8 +29,11 @@ const SeatForm = ({ field, setActiveStep, bookingData, setBookingData }) => {
           } ${trip.destination.name}`}
         </Typography>
         <Typography component="span" variant="h5">
-          , <span style={{ fontWeight: "bold" }}>Date: </span>{" "}
-          {`${trip.departureTime} ${bookingDate}`}
+          , <span style={{ fontWeight: "bold" }}>Date time: </span>{" "}
+          {format(
+            parse(trip.departureDateTime, "yyyy-MM-dd HH:mm", new Date()),
+            "HH:mm dd-MM-yyyy"
+          )}
         </Typography>
         <Typography component="span" variant="h5">
           , <span style={{ fontWeight: "bold" }}>Coach: </span>

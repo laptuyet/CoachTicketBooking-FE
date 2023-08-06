@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
 import CircularProgress from "@mui/material/CircularProgress";
-import { TimePicker } from "@mui/x-date-pickers";
+import { DateTimePicker, TimePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -46,8 +46,8 @@ const initialValues = {
   destination: null,
   discount: null,
   price: 0,
-  departureTime: format(new Date(), "HH:mm"),
-  arrivalTime: null,
+  departureDateTime: format(new Date(), "yyyy-MM-dd HH:mm"),
+  duration: 0,
   isEditMode: false, // remove this field when submit
 };
 
@@ -69,8 +69,8 @@ const tripSchema = yup.object().shape({
     }),
   discount: yup.object().notRequired(),
   price: yup.number().positive("Price must be positive").default(1),
-  departureTime: yup.string().required("Required"),
-  arrivalTime: yup.string().notRequired(),
+  departureDateTime: yup.string().required("Required"),
+  duration: yup.number().notRequired(),
   isEditMode: yup.boolean().default(true),
 });
 
@@ -208,16 +208,16 @@ const TripForm = () => {
         initialValues={
           data
             ? {
-                // ...data,
-                id: data.id,
-                driver: data.driver,
-                coach: data.coach,
-                source: data.source,
-                destination: data.destination,
-                discount: data.discount,
-                price: data.price,
-                departureTime: data.departureTime,
-                arrivalTime: data.arrivalTime,
+                ...data,
+                // id: data.id,
+                // driver: data.driver,
+                // coach: data.coach,
+                // source: data.source,
+                // destination: data.destination,
+                // discount: data.discount,
+                // price: data.price,
+                // departureDateTime: data.departureDateTime,
+                // duration: data.duration,
                 isEditMode: true,
               }
             : initialValues
@@ -479,12 +479,19 @@ const TripForm = () => {
                 }}
               >
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
-                  <TimePicker
-                    format="HH:mm"
-                    label="Departure Time"
-                    value={parse(values.departureTime, "HH:mm", new Date())}
+                  <DateTimePicker
+                    format="HH:mm dd-MM-yyyy"
+                    label="Departure Date Time"
+                    value={parse(
+                      values.departureDateTime,
+                      "yyyy-MM-dd HH:mm",
+                      new Date()
+                    )}
                     onChange={(newTime) => {
-                      setFieldValue("departureTime", format(newTime, "HH:mm"));
+                      setFieldValue(
+                        "departureDateTime",
+                        format(newTime, "yyyy-MM-dd HH:mm")
+                      );
                     }}
                     slotProps={{
                       textField: {
@@ -498,9 +505,10 @@ const TripForm = () => {
                         size: "small",
                         color: "warning",
                         error:
-                          !!touched.departureTime && !!errors.departureTime,
+                          !!touched.departureDateTime &&
+                          !!errors.departureDateTime,
                         helperText:
-                          touched.departureTime && errors.departureTime,
+                          touched.departureDateTime && errors.departureDateTime,
                       },
                       dialog: {
                         sx: {
@@ -514,7 +522,25 @@ const TripForm = () => {
                 </LocalizationProvider>
               </FormControl>
 
-              <FormControl
+              <TextField
+                color="warning"
+                size="small"
+                fullWidth
+                variant="outlined"
+                type="number"
+                label="Duration (hour)"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.duration}
+                name="duration"
+                error={!!touched.duration && !!errors.duration}
+                helperText={touched.duration && errors.duration}
+                sx={{
+                  gridColumn: "span 2",
+                }}
+              />
+
+              {/* <FormControl
                 sx={{
                   gridColumn: "span 2",
                 }}
@@ -551,7 +577,7 @@ const TripForm = () => {
                     }}
                   />
                 </LocalizationProvider>
-              </FormControl>
+              </FormControl> */}
             </Box>
             <Box mt="20px" display="flex" justifyContent="center">
               <LoadingButton

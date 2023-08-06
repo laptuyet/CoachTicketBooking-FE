@@ -15,11 +15,10 @@ const getPageOfBookings = async (page, limit) => {
     return resp.data;
 }
 
-const getSeatBooking = async (tripId, bookingDateTime) => {
+const getSeatBooking = async (tripId) => {
     const resp = await http.get("/bookings/emptySeats", {
         params: {
-            tripId: tripId,
-            departureDateTime: bookingDateTime,
+            tripId: tripId
         },
     });
     return resp.data;

@@ -7,7 +7,9 @@ export default [
         trip: yup.object().required("Required"),
         source: yup.object().required("Required"),
         destination: yup.object().required("Required"),
-        bookingDateTime: yup.date().required("Required"),
+        from: yup.date().required("Required"),
+        to: yup.date().required("Required"),
+        bookingDateTime: yup.date().notRequired(),
         bookingType: yup.string().notRequired()
     }),
     yup.object().shape({

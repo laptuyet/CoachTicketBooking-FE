@@ -23,6 +23,8 @@ const initialValues = {
   trip: null,
   source: null, // remove when submit
   destination: null, // remove when submit
+  from: format(new Date(), "yyyy-MM-dd"), // remove when submit
+  to: format(new Date(), "yyyy-MM-dd"), // remove when submit
   bookingDateTime: format(new Date(), "yyyy-MM-dd HH:mm"),
   seatNumber: [], // user can choose max 5 seat, in that case: create 5 tickets
   bookingType: "ONEWAY",

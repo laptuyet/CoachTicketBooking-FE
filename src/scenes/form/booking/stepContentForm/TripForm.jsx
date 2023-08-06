@@ -100,13 +100,15 @@ const TripForm = ({ field, setActiveStep, bookingData, setBookingData }) => {
       "trips",
       selectedSource?.id,
       selectedDestination?.id,
-      values.bookingDateTime.split(" ")[0],
+      values.from.split(" ")[0],
+      values.to.split(" ")[0],
     ],
     queryFn: () =>
       tripApi.findAllTripBySourceAndDest(
         selectedSource?.id,
         selectedDestination?.id,
-        values.bookingDateTime.split(" ")[0]
+        values.from.split(" ")[0],
+        values.to.split(" ")[0]
       ),
     keepPreviousData: true,
     enabled: !!selectedSource && !!selectedDestination && findClicked,
@@ -119,8 +121,8 @@ const TripForm = ({ field, setActiveStep, bookingData, setBookingData }) => {
     setSelectedDestination(selectedSource);
   };
 
-  const getNumberOfOrderedSeats = async (tripId, bookingDateTime) => {
-    const resp = await bookingApi.getSeatBooking(tripId, bookingDateTime);
+  const getNumberOfOrderedSeats = async (tripId) => {
+    const resp = await bookingApi.getSeatBooking(tripId);
     return resp;
   };
 
@@ -128,7 +130,7 @@ const TripForm = ({ field, setActiveStep, bookingData, setBookingData }) => {
     const fetchOrderedSeats = async () => {
       if (findTripQuery.data && values.bookingDateTime) {
         const promises = findTripQuery.data.map((trip) =>
-          getNumberOfOrderedSeats(trip.id, values.bookingDateTime)
+          getNumberOfOrderedSeats(trip.id)
         );
 
         const orderedSeatsList = await Promise.all(promises);
@@ -313,16 +315,19 @@ const TripForm = ({ field, setActiveStep, bookingData, setBookingData }) => {
             )}
           />
         </Box>
-        {/* choose time */}
+
+        {/* choose datetime */}
         <Box
           display="flex"
+          gap="20px"
           alignItems="center"
           sx={{
             gridColumn: "span 2",
           }}
         >
-          {/* departure time */}
+          {/* from date */}
           <FormControl
+            fullWidth
             sx={{
               gridColumn: "span 2",
             }}
@@ -330,18 +335,11 @@ const TripForm = ({ field, setActiveStep, bookingData, setBookingData }) => {
             <LocalizationProvider dateAdapter={AdapterDateFns}>
               <DatePicker
                 format="dd/MM/yyyy"
-                label="Departure Date"
+                label="From"
                 minDate={new Date()}
-                value={parse(
-                  values.bookingDateTime,
-                  "yyyy-MM-dd HH:mm",
-                  new Date()
-                )}
+                value={parse(values.from, "yyyy-MM-dd", new Date())}
                 onChange={(newDate) => {
-                  setFieldValue(
-                    "bookingDateTime",
-                    format(newDate, "yyyy-MM-dd HH:mm")
-                  );
+                  setFieldValue("from", format(newDate, "yyyy-MM-dd"));
                 }}
                 slotProps={{
                   textField: {
@@ -354,7 +352,7 @@ const TripForm = ({ field, setActiveStep, bookingData, setBookingData }) => {
                     },
                     size: "small",
                     color: "warning",
-                    error: !!touched.dob && !!errors.dob,
+                    error: !!touched.from && !!errors.from,
                   },
                   dialog: {
                     sx: {
@@ -367,8 +365,9 @@ const TripForm = ({ field, setActiveStep, bookingData, setBookingData }) => {
               />
             </LocalizationProvider>
           </FormControl>
-          {/* return time */}
-          {/* <FormControl
+
+          {/* to date */}
+          <FormControl
             fullWidth
             sx={{
               gridColumn: "span 2",
@@ -376,24 +375,12 @@ const TripForm = ({ field, setActiveStep, bookingData, setBookingData }) => {
           >
             <LocalizationProvider dateAdapter={AdapterDateFns}>
               <DatePicker
-                disabled={values.bookingType === "ONEWAY"}
                 format="dd/MM/yyyy"
-                label="Return Date"
-                minDate={parse(
-                  values.bookingDateTime,
-                  "yyyy-MM-dd HH:mm",
-                  new Date()
-                )}
-                value={parse(
-                  values.bookingDateTime,
-                  "yyyy-MM-dd HH:mm",
-                  new Date()
-                )}
+                label="To"
+                minDate={parse(values.from, "yyyy-MM-dd", new Date())}
+                value={parse(values.to, "yyyy-MM-dd", new Date())}
                 onChange={(newDate) => {
-                  setFieldValue(
-                    "bookingDateTime",
-                    format(newDate, "yyyy-MM-dd HH:mm")
-                  );
+                  setFieldValue("to", format(newDate, "yyyy-MM-dd"));
                 }}
                 slotProps={{
                   textField: {
@@ -406,7 +393,7 @@ const TripForm = ({ field, setActiveStep, bookingData, setBookingData }) => {
                     },
                     size: "small",
                     color: "warning",
-                    error: !!touched.dob && !!errors.dob,
+                    error: !!touched.to && !!errors.to,
                   },
                   dialog: {
                     sx: {
@@ -418,7 +405,7 @@ const TripForm = ({ field, setActiveStep, bookingData, setBookingData }) => {
                 }}
               />
             </LocalizationProvider>
-          </FormControl> */}
+          </FormControl>
         </Box>
       </Box>
 
@@ -457,7 +444,16 @@ const TripForm = ({ field, setActiveStep, bookingData, setBookingData }) => {
                     primary={
                       <Typography variant="h5">
                         <span style={{ fontWeight: "bold" }}>
-                          [{trip.departureTime}]
+                          [
+                          {format(
+                            parse(
+                              trip.departureDateTime,
+                              "yyyy-MM-dd HH:mm",
+                              new Date()
+                            ),
+                            "HH:mm dd-MM-yyyy"
+                          )}
+                          ]
                         </span>{" "}
                         {trip.source.name} {`\u21D2`}
                         {trip.destination.name}

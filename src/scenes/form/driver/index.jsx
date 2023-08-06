@@ -45,7 +45,7 @@ const initialValues = {
   gender: false,
   address: "",
   licenseNumber: "",
-  quit: true,
+  quit: false,
   isEditMode: false, // remove this field when submit
 };
 
@@ -131,7 +131,6 @@ const DriverForm = () => {
   const addNewMatch = useMatch("/drivers/new");
   const isAddMode = !!addNewMatch;
   const isNonMobile = useMediaQuery("(min-width:600px)");
-  const [showPwd, setShowPwd] = useState(false);
   const { driverId } = useParams();
   const queryClient = useQueryClient();
 

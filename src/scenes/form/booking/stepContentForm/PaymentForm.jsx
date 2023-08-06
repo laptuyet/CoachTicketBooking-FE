@@ -73,8 +73,11 @@ const PaymentForm = ({ field, setActiveStep, bookingData, setBookingData }) => {
             {`${trip.coach.name}, Type: ${trip.coach.coachType}`}
           </Typography>
           <Typography component="span" variant="h5">
-            <span style={{ fontWeight: "bold" }}>Date: </span>{" "}
-            {trip.departureTime} {bookingDate}
+            <span style={{ fontWeight: "bold" }}>Datetime: </span>{" "}
+            {format(
+              parse(trip.departureDateTime, "yyyy-MM-dd HH:mm", new Date()),
+              "HH:mm dd-MM-yyyy"
+            )}
           </Typography>
           <Typography component="span" variant="h5">
             <span style={{ fontWeight: "bold" }}>Total: </span>

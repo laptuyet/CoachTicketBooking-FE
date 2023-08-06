@@ -559,9 +559,14 @@ const Ticket = () => {
                 type="text"
                 label="Departure DateTime"
                 name="bookingDateTime"
-                value={`${
-                  bookingQuery?.data?.trip.departureTime
-                } ${getBookingDateFormat(bookingQuery?.data?.bookingDateTime)}`}
+                value={format(
+                  parse(
+                    bookingQuery?.data.trip.departureDateTime,
+                    "yyyy-MM-dd HH:mm",
+                    new Date()
+                  ),
+                  "HH:mm dd-MM-yyyy"
+                )}
                 sx={{
                   gridColumn: "span 4",
                 }}

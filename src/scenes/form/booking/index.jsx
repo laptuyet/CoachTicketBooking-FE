@@ -25,10 +25,6 @@ const formatCurrency = (amount) => {
   }).format(amount);
 };
 
-const formatBookingDateTime = (value) => {
-  return format(parse(value, "yyyy-MM-dd HH:mm", new Date()), "dd/MM/yyyy");
-};
-
 const BookingForm = () => {
   const { bookingId } = useParams();
   const queryClient = useQueryClient();
@@ -110,8 +106,14 @@ const BookingForm = () => {
                   <span style={{ fontWeight: "bold" }}>
                     Departure DateTime:{" "}
                   </span>{" "}
-                  {values.trip.departureTime}{" "}
-                  {formatBookingDateTime(values.bookingDateTime)}
+                  {format(
+                    parse(
+                      values.trip.departureDateTime,
+                      "yyyy-MM-dd HH:mm",
+                      new Date()
+                    ),
+                    "HH:mm dd-MM-yyyy"
+                  )}
                 </Typography>
                 <Typography component="span" variant="h5">
                   <span style={{ fontWeight: "bold" }}>Total: </span>
