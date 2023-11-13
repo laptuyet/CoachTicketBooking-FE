@@ -3,8 +3,14 @@ import { Box, Typography } from "@mui/material";
 import React, { memo } from "react";
 
 const SeatModel = (props) => {
-  const { seat, handleSeatChoose, coachType, selectedSeats, orderedSeats } =
-    props;
+  const {
+    seat,
+    handleSeatChoose,
+    coachType,
+    selectedSeats,
+    orderedSeats,
+    setFieldValue,
+  } = props;
   const { name, choose } = seat;
   const isOrdered = orderedSeats.includes(name);
   const isChosen = selectedSeats.includes(name);
@@ -34,6 +40,7 @@ const SeatModel = (props) => {
           (coachType === "LIMOUSINE" || coachType === "BED")
             ? "span 2"
             : undefined,
+        zIndex: 10,
       }}
       width="60px"
       height="60px"
@@ -44,7 +51,8 @@ const SeatModel = (props) => {
             name,
             name.startsWith("A") ? "DOWN_STAIR" : "UP_STAIR",
             !isChosen,
-            isOrdered
+            isOrdered,
+            setFieldValue
           );
         }}
         sx={{ width: "100%", height: "100%" }}
@@ -53,7 +61,7 @@ const SeatModel = (props) => {
         position="absolute"
         top="40%"
         left="50%"
-        zIndex={-1}
+        zIndex={-100}
         fontWeight="bold"
         sx={{
           transform: "translate(-50%, -50%)",

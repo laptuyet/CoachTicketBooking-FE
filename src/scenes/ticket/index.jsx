@@ -17,6 +17,7 @@ import {
   Skeleton,
   Stack,
   TextField,
+  TextareaAutosize,
   Typography,
   useTheme,
 } from "@mui/material";
@@ -56,6 +57,7 @@ const Ticket = () => {
   const [openTripModal, setOpenTripModal] = useState(false);
   const [openBookingModal, setOpenBookingModal] = useState(false);
   const [selectedRow, setSelectedRow] = useState("");
+  const [selectedBookingCode, setSelectedBookingCode] = useState("");
   // const [selectedUser, setSelectedUser] = useState("");
   // const [selectedTrip, setSelectedTrip] = useState("");
   const [filtering, setFiltering] = useState("");
@@ -125,16 +127,13 @@ const Ticket = () => {
         isEllipsis: true,
         align: "center",
         cell: (info) => {
-          const { id, source, destination, departureTime } = info.getValue();
+          const { id, source, destination, departureDateTime } =
+            info.getValue();
           return (
             <Box display="flex" alignItems="center" justifyContent="center">
-              <Typography fontWeight="bold">[{departureTime}]</Typography>
+              {/* <Typography fontWeight="bold">[{departureDateTime}]</Typography> */}
               {source.name}
-              {info.row.original.bookingType === "ONEWAY" ? (
-                <span style={{ margin: "0 6px" }}>&rArr;</span>
-              ) : (
-                <span style={{ margin: "0 6px" }}>&hArr;</span>
-              )}
+              <span style={{ margin: "0 6px" }}>&rArr;</span>
               {destination.name}
               <CustomToolTip title="Detail" placement="top">
                 <IconButton
@@ -160,21 +159,21 @@ const Ticket = () => {
         align: "center",
       },
       {
-        header: "Payment",
+        header: "Payment & Status",
         accessorKey: "payment",
-        footer: "Payment",
+        footer: "Payment & Status",
         width: 100,
         maxWidth: 200,
         align: "center",
         cell: (info) => {
-          const { paymentStatus } = info.row.original;
+          const { bookingStatus } = info.row.original;
           return (
             <Box
               display="flex"
               alignItems="center"
               justifyContent="space-around"
             >
-              {paymentStatus}
+              {bookingStatus}
               <CustomToolTip title="Detail" placement="top">
                 <IconButton
                   onClick={() => {
@@ -211,6 +210,7 @@ const Ticket = () => {
               <CustomToolTip title="Delete" placement="top">
                 <IconButton
                   onClick={() => {
+                    setSelectedBookingCode(info.row.original.code);
                     handleOpenDeleteForm(info.row.original.id);
                   }}
                 >
@@ -726,7 +726,7 @@ const Ticket = () => {
                   type="text"
                   label="Status"
                   name="paymentStatus"
-                  value={bookingQuery?.data?.paymentStatus}
+                  value={bookingQuery?.data?.bookingStatus}
                   sx={{
                     gridColumn: "span 2",
                   }}
@@ -738,11 +738,12 @@ const Ticket = () => {
                 fontWeight="bold"
                 textAlign="center"
               >
-                PAYMENT HISTORIES
+                STATUS HISTORIES
               </Typography>
-              {bookingQuery.data.paymentHistories.length === 0 ? undefined : (
+              {bookingQuery.data.bookingStatusHistories.length ===
+              0 ? undefined : (
                 <Box mt="20px" maxHeight="200px" overflow="auto">
-                  {bookingQuery.data.paymentHistories
+                  {bookingQuery.data.bookingStatusHistories
                     .toReversed()
                     .map((history, index) => {
                       const { oldStatus, newStatus, statusChangeDateTime } =
@@ -807,18 +808,32 @@ const Ticket = () => {
             <WarningRoundedIcon
               sx={{ color: "#fbc02a", fontSize: "2.5rem", marginRight: "4px" }}
             />{" "}
-            Cancel Booking&nbsp;
-            <span
-              style={{
-                fontStyle: "italic",
-              }}
-            >
-              {selectedRow} ?
-            </span>
+            Cancel Ticket&nbsp; ?
+          </Typography>
+          <Typography
+            variant="h5"
+            textAlign="center"
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            m="8px"
+            style={{
+              fontStyle: "italic",
+            }}
+          >
+            Code: {selectedBookingCode}
           </Typography>
           <Typography textAlign="center" fontStyle="italic">
-            * This will turn payment status to CANCEL
+            * This will turn booking status to CANCEL*
+            {/* Sẽ thay đổi trạng thái vé đặt thành "Đã hủy" */}
           </Typography>
+          <Box m={2} textAlign={"center"} width="100%">
+            <TextareaAutosize
+              aria-label="minimum height"
+              minRows={3}
+              placeholder="Cancel reason"
+            />
+          </Box>
           <Box
             id="modal-modal-description"
             sx={{ mt: 3 }}
@@ -827,19 +842,21 @@ const Ticket = () => {
           >
             <Button
               variant="contained"
-              color="error"
+              color="success"
               startIcon={<CheckIcon />}
               onClick={() => handleDeleteBooking(selectedRow)}
             >
               Confirm
+              {/* Xác nhận */}
             </Button>
             <Button
               variant="contained"
-              color="success"
+              color="error"
               startIcon={<ClearIcon />}
               onClick={() => setOpenModal(!openModal)}
             >
               Cancel
+              {/* Hủy bỏ */}
             </Button>
           </Box>
         </Box>
